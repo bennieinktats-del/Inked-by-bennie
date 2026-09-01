@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inked by Bennie | Tattoo Studio</title>
+  <meta name="description" content="Inked by Bennie — minimalist custom and flash tattoos.">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="nav">
+  <a class="logo" href="index.html">INKED <span>BY BENNIE</span></a>
+  <nav>
+    <a href="#designs">Designs</a>
+    <a href="#booking">Book</a>
+    <a href="#policies">Policies</a>
+  </nav>
+</header>
+
+<main>
+<section class="hero">
+  <p class="eyebrow">TATTOOS • FLASH • CUSTOM</p>
+  <h1>Made to be <em>yours.</em></h1>
+  <p class="hero-copy">Minimal, intentional tattoos by Inked by Bennie. Choose a ready-made flash design or tell me what you're imagining.</p>
+  <div class="buttons">
+    <a class="button gold" href="#designs">View Designs</a>
+    <a class="button outline" href="#booking">Book a Tattoo</a>
+  </div>
+</section>
+
+<section id="designs" class="section">
+  <div class="section-head">
+    <p class="eyebrow">FLASH COLLECTION</p>
+    <h2>Choose your design</h2>
+    <p>30 simple, tattooable flash slots. Replace each placeholder with your final artwork.</p>
+  </div>
+  <div class="grid">
+    <!-- Replace each placeholder image with your actual design -->
+    <script>
+      for (let i = 1; i <= 30; i++) {
+        document.write(`
+          <article class="card">
+            <div class="design-placeholder"><span>DESIGN ${String(i).padStart(2,'0')}</span></div>
+            <div class="card-info"><strong>Design ${String(i).padStart(2,'0')}</strong><span>Flash</span></div>
+          </article>`);
+      }
+    </script>
+  </div>
+</section>
+
+<section id="booking" class="section dark-section">
+  <div class="section-head">
+    <p class="eyebrow">BOOKING</p>
+    <h2>Let's make it permanent.</h2>
+    <p>Start with a flash design or submit a custom tattoo request.</p>
+  </div>
+
+  <div class="booking-options">
+    <button class="option active" data-type="flash">FLASH DESIGN</button>
+    <button class="option" data-type="custom">CUSTOM TATTOO</button>
+  </div>
+
+  <form id="bookingForm" class="form">
+    <input type="hidden" id="requestType" name="requestType" value="Flash Design">
+
+    <label>Full name<input name="name" required placeholder="Your name"></label>
+    <label>Email<input type="email" name="email" required placeholder="you@example.com"></label>
+    <label>Phone / WhatsApp<input name="phone" required placeholder="+234..."></label>
+
+    <div id="flashFields">
+      <label>Design number
+        <select name="design">
+          <option value="">Select a design</option>
+          <script>
+            for (let i=1;i<=30;i++) document.write(`<option>Design ${String(i).padStart(2,'0')}</option>`);
+          </script>
+        </select>
+      </label>
+    </div>
+
+    <div id="customFields" class="hidden">
+      <label>Tell me about your idea<textarea name="idea" rows="5" placeholder="Describe the tattoo you have in mind..."></textarea></label>
+      <label>Reference / inspiration image
+        <input type="file" name="reference" accept="image/*">
+        <small>Optional — upload an image that captures the style or idea.</small>
+      </label>
+    </div>
+
+    <label>Tattoo placement
+      <select name="placement" required>
+        <option value="">Select placement</option>
+        <option>Arm</option><option>Forearm</option><option>Wrist</option>
+        <option>Hand</option><option>Shoulder</option><option>Back</option>
+        <option>Chest</option><option>Rib</option><option>Thigh</option>
+        <option>Calf</option><option>Ankle</option><option>Other</option>
+      </select>
+    </label>
+
+    <label>Desired size
+      <select name="size" required>
+        <option value="">Select approximate size</option>
+        <option>Under 3 cm</option><option>3–5 cm</option><option>5–10 cm</option>
+        <option>10–15 cm</option><option>15+ cm</option><option>Not sure — I'd like advice</option>
+      </select>
+    </label>
+
+    <label>Placement photo <span class="muted">(recommended)</span>
+      <input type="file" name="placementPhoto" accept="image/*">
+      <small>A clear photo of the area helps with sizing and placement.</small>
+    </label>
+
+    <label>Additional notes<textarea name="notes" rows="4" placeholder="Anything else I should know?"></textarea></label>
+
+    <label class="check"><input type="checkbox" required> I have read and agree to the booking policies.</label>
+    <button class="button gold full" type="submit">Submit Booking Request</button>
+    <p class="form-note">Your appointment is not confirmed until your deposit has been received and your booking is approved.</p>
+  </form>
+</section>
+
+<section id="policies" class="section">
+  <div class="section-head">
+    <p class="eyebrow">BEFORE YOU BOOK</p>
+    <h2>Policies</h2>
+  </div>
+  <div class="policies">
+    <p><strong>Deposit:</strong> A 50% deposit is required to secure an approved appointment.</p>
+    <p><strong>Custom work:</strong> Custom requests are reviewed before a final price is given.</p>
+    <p><strong>Design changes:</strong> Minor changes may be possible depending on the design and stage of preparation.</p>
+    <p><strong>Appointment:</strong> Please arrive on time and follow all aftercare instructions provided after your tattoo.</p>
+    <p class="muted">Replace these starter policies with your final business policies before launch.</p>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="logo">INKED <span>BY BENNIE</span></div>
+  <p>© 2026 Inked by Bennie. All rights reserved.</p>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
