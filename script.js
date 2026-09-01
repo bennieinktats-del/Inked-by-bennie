@@ -15,7 +15,37 @@ options.forEach(option => {
   });
 });
 
-form.addEventListener('submit', (event) => {
+form.addEventListener('submit', async (event) => {
   event.preventDefault();
-  alert('Thank you! Your booking request has been prepared. Connect this form to your preferred booking/email service before launch.');
+
+  const submitButton = form.querySelector('button[type="submit"]');
+  submitButton.disabled = true;
+  submitButton.textContent = 'Sending...';
+
+  try {
+    const response = await fetch('https://formspree.io/f/xnpqdjpv', {
+      method: 'POST',
+      body: new FormData(form),
+      headers: {
+        Accept: 'application/json'
+      }
+    });
+
+    if (response.ok) {
+      form.reset();
+      paymentSection.classList.remove('hidden');
+      submitButton.disabled = false;
+      submitButton.textContent = 'Booking Request Sent';
+    } else {
+      throw new Error('Form submission failed');
+    }
+  } catch (error) {
+    alert('Something went wrong. Please try again.');
+    submitButton.disabled = false;
+    submitButton.textContent = 'Submit Booking Request';
+  }
 });
+  
+  
+
+
