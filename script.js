@@ -1,4 +1,5 @@
 const options = document.querySelectorAll('.option');
+const paymentSection = document.getElementById('payment-section');
 const requestType = document.getElementById('requestType');
 const flashFields = document.getElementById('flashFields');
 const customFields = document.getElementById('customFields');
