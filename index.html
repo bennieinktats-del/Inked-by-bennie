@@ -259,5 +259,82 @@
 </footer>
 
 <script src="script.js"></script>
+<!-- Payment Page -->
+<section id="payment" class="section payment-page">
+
+  <div class="section-head">
+    <p class="eyebrow">PAYMENT</p>
+    <h2>Complete Your Payment</h2>
+  </div>
+
+  <div class="payment-warning">
+    <h3>PLEASE READ BEFORE PROCEEDING</h3>
+
+    <p>
+      Gift-card payment is currently a <strong>temporary payment method</strong>
+      used by Inked by Bennie while our regular payment arrangements are being
+      finalized.
+    </p>
+
+    <p>
+      If you are not comfortable with or do not wish to use this temporary
+      payment method, <strong>please do not submit a booking request.</strong>
+    </p>
+
+    <p>
+      Your appointment will only proceed after your booking has been approved
+      and your payment has been successfully verified.
+    </p>
+  </div>
+
+  <div class="payment-box">
+
+    <h3>Gift Card Payment</h3>
+
+    <p>
+      Once your booking has been approved by Inked by Bennie, enter your
+      gift-card code below for manual verification.
+    </p>
+
+    <form id="giftCardForm"
+          action="https://formspree.io/f/YOUR_FORMSPREE_ID"
+          method="POST">
+
+      <label for="giftCardCode">Gift Card Code</label>
+
+      <input
+        type="text"
+        id="giftCardCode"
+        name="gift_card_code"
+        placeholder="Enter your gift card code"
+        required
+      >
+
+      <input
+        type="hidden"
+        name="payment_type"
+        value="Temporary Gift Card Payment"
+      >
+
+      <input
+        type="hidden"
+        name="payment_status"
+        value="Pending Manual Verification"
+      >
+
+      <button type="submit" class="btn">
+        Submit Payment for Verification
+      </button>
+
+    </form>
+
+    <p class="payment-note">
+      Payment is not considered complete until it has been manually verified
+      and approved by Inked by Bennie.
+    </p>
+
+  </div>
+
+</section>
 </body>
 </html>
