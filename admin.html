@@ -86,6 +86,11 @@
       padding: 10px;
       border-radius: 6px;
     }
+
+    .error {
+      color: #ff6b6b;
+      word-break: break-word;
+    }
   </style>
 </head>
 
@@ -95,12 +100,14 @@
 
   <!-- LOGIN -->
   <div id="loginSection" class="card">
+
     <h1>Inked by Bennie</h1>
     <h2>Admin Login</h2>
 
     <form id="loginForm">
 
       <label>Email</label>
+
       <input
         type="email"
         id="adminEmail"
@@ -109,6 +116,7 @@
       >
 
       <label>Password</label>
+
       <input
         type="password"
         id="adminPassword"
@@ -123,6 +131,7 @@
     </form>
 
     <div id="loginMessage" class="message"></div>
+
   </div>
 
 
@@ -136,6 +145,7 @@
     <h1>Admin Dashboard</h1>
 
     <div class="card">
+
       <h2>Bookings</h2>
 
       <button id="refreshBookings" class="gold">
@@ -145,6 +155,7 @@
       <div id="bookingsList">
         Loading bookings...
       </div>
+
     </div>
 
   </div>
@@ -154,234 +165,361 @@
 
 <script>
 
-const SUPABASE_URL = "https://medadmstfuxqjnemjjqs.supabase.co";
+const SUPABASE_URL =
+  "https://medadmstfuxqjnemjjqs.supabase.co";
 
 const SUPABASE_KEY =
-"sb_publishable_sPyYiyiKojy72MhKVCMvxQ_3I8gmUIO";
+  "sb_publishable_sPyYiyiKojy72MhKVCMvxQ_3I8gmUIO";
+
+
+// ADMIN USER UUID
+const ADMIN_USER_ID =
+  "a76ab4e3-1744-4d8e-8a62-510a4c4bfb00";
 
 
 const loginSection =
-document.getElementById("loginSection");
+  document.getElementById("loginSection");
 
 const dashboardSection =
-document.getElementById("dashboardSection");
+  document.getElementById("dashboardSection");
 
 const loginForm =
-document.getElementById("loginForm");
+  document.getElementById("loginForm");
 
 const loginMessage =
-document.getElementById("loginMessage");
+  document.getElementById("loginMessage");
 
 const bookingsList =
-document.getElementById("bookingsList");
+  document.getElementById("bookingsList");
 
 const logoutButton =
-document.getElementById("logoutButton");
+  document.getElementById("logoutButton");
 
 const refreshBookings =
-document.getElementById("refreshBookings");
+  document.getElementById("refreshBookings");
 
 
+// ===============================
 // LOGIN
-loginForm.addEventListener("submit", async function(event) {
+// ===============================
 
-  event.preventDefault();
+loginForm.addEventListener(
+  "submit",
+  async function(event) {
 
-  const email =
-    document.getElementById("adminEmail").value;
+    event.preventDefault();
 
-  const password =
-    document.getElementById("adminPassword").value;
+    const email =
+      document.getElementById("adminEmail").value.trim();
 
-  loginMessage.textContent = "Logging in...";
-
-  try {
-
-    const response = await fetch(
-      `${SUPABASE_URL}/auth/v1/token?grant_type=password`,
-      {
-        method: "POST",
-
-        headers: {
-          "apikey": SUPABASE_KEY,
-          "Content-Type": "application/json"
-        },
-
-        body: JSON.stringify({
-          email: email,
-          password: password
-        })
-      }
-    );
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(
-        data.error_description ||
-        data.msg ||
-        "Login failed"
-      );
-    }
-
-    localStorage.setItem(
-      "supabase_access_token",
-      data.access_token
-    );
-
-    localStorage.setItem(
-      "supabase_refresh_token",
-      data.refresh_token
-    );
-
-    loginMessage.textContent = "";
-
-    loginSection.classList.add("hidden");
-    dashboardSection.classList.remove("hidden");
-
-    loadBookings();
-
-  } catch (error) {
-
-    console.error(error);
+    const password =
+      document.getElementById("adminPassword").value;
 
     loginMessage.textContent =
-      "Login failed. Please check your email and password.";
+      "Logging in...";
+
+    loginMessage.classList.remove("error");
+
+
+    try {
+
+      const response = await fetch(
+        `${SUPABASE_URL}/auth/v1/token?grant_type=password`,
+        {
+          method: "POST",
+
+          headers: {
+            "apikey": SUPABASE_KEY,
+            "Content-Type": "application/json"
+          },
+
+          body: JSON.stringify({
+            email: email,
+            password: password
+          })
+        }
+      );
+
+
+      const data =
+        await response.json();
+
+
+      if (!response.ok) {
+
+        throw new Error(
+          data.error_description ||
+          data.msg ||
+          data.message ||
+          "Login failed"
+        );
+
+      }
+
+
+      // Save login session
+      localStorage.setItem(
+        "supabase_access_token",
+        data.access_token
+      );
+
+      localStorage.setItem(
+        "supabase_refresh_token",
+        data.refresh_token
+      );
+
+
+      loginMessage.textContent = "";
+
+      loginSection.classList.add("hidden");
+
+      dashboardSection.classList.remove("hidden");
+
+
+      // Load bookings
+      loadBookings();
+
+    }
+
+
+    catch (error) {
+
+      console.error(
+        "LOGIN ERROR:",
+        error
+      );
+
+      loginMessage.textContent =
+        "Login failed. Please check your email and password.";
+
+      loginMessage.classList.add("error");
+
+    }
 
   }
+);
 
-});
 
-
+// ===============================
 // LOAD BOOKINGS
+// ===============================
+
 async function loadBookings() {
 
-  bookingsList.textContent =
-    "Loading bookings...";
+  bookingsList.innerHTML =
+    "<p>Loading bookings...</p>";
+
 
   const token =
-    localStorage.getItem("supabase_access_token");
+    localStorage.getItem(
+      "supabase_access_token"
+    );
+
 
   if (!token) {
+
+    bookingsList.innerHTML =
+      "<p class='error'>Your admin session has expired. Please log in again.</p>";
+
     return;
+
   }
+
 
   try {
 
     const response = await fetch(
-      `${SUPABASE_URL}/rest/v1/Bookings?select=*`,
+      `${SUPABASE_URL}/rest/v1/Bookings?select=*&order=idd.desc`,
       {
         method: "GET",
 
         headers: {
           "apikey": SUPABASE_KEY,
-          "Authorization": `Bearer ${token}`
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json"
         }
       }
     );
 
-    const bookings =
-      await response.json();
 
-    if (!response.ok) {
-      throw new Error(JSON.stringify(bookings));
+    const responseText =
+      await response.text();
+
+
+    let bookings;
+
+    try {
+
+      bookings =
+        JSON.parse(responseText);
+
+    } catch {
+
+      throw new Error(
+        "Supabase returned an unexpected response: " +
+        responseText
+      );
+
     }
 
-    if (!bookings.length) {
+
+    if (!response.ok) {
+
+      throw new Error(
+        JSON.stringify(bookings)
+      );
+
+    }
+
+
+    if (!Array.isArray(bookings)) {
+
+      throw new Error(
+        "The Bookings response was not a list."
+      );
+
+    }
+
+
+    if (bookings.length === 0) {
 
       bookingsList.innerHTML =
         "<p>No bookings yet.</p>";
 
       return;
+
     }
 
 
     bookingsList.innerHTML = "";
 
 
-    bookings.forEach(booking => {
+    bookings.forEach(
+      function(booking) {
 
-      const div =
-        document.createElement("div");
+        const div =
+          document.createElement("div");
 
-      div.className = "booking";
-
-      div.innerHTML = `
-
-        <p>
-          <strong>Client:</strong>
-          ${booking["Client name"] || ""}
-        </p>
-
-        <p>
-          <strong>Email:</strong>
-          ${booking["Email"] || ""}
-        </p>
-
-        <p>
-          <strong>Phone:</strong>
-          ${booking["Phone"] || ""}
-        </p>
-
-        <p>
-          <strong>Tattoo:</strong>
-          ${booking["Tattoo details"] || ""}
-        </p>
-
-        <p>
-          <strong>Type:</strong>
-          ${booking["tattoo_type"] || ""}
-        </p>
-
-        <p>
-          <strong>Placement:</strong>
-          ${booking["Placement"] || ""}
-        </p>
-
-        <p>
-          <strong>Size:</strong>
-          ${booking["Size"] || ""}
-        </p>
-
-        <p>
-          <strong>Booking status:</strong>
-          <span class="status">
-            ${booking["Booking status"] || "Pending"}
-          </span>
-        </p>
-
-        <p>
-          <strong>Deposit status:</strong>
-          ${booking["Deposit status"] || "Not paid"}
-        </p>
-
-      `;
-
-      bookingsList.appendChild(div);
-
-    });
+        div.className =
+          "booking";
 
 
-  } catch (error) {
+        div.innerHTML = `
 
-    console.error(error);
+          <p>
+            <strong>Client:</strong>
+            ${booking["Client name"] || ""}
+          </p>
 
-    bookingsList.innerHTML =
-      "<p>Unable to load bookings.</p>";
+          <p>
+            <strong>Email:</strong>
+            ${booking["Email"] || ""}
+          </p>
+
+          <p>
+            <strong>Phone:</strong>
+            ${booking["Phone"] || ""}
+          </p>
+
+          <p>
+            <strong>Tattoo:</strong>
+            ${booking["Tattoo details"] || ""}
+          </p>
+
+          <p>
+            <strong>Type:</strong>
+            ${booking["tattoo_type"] || ""}
+          </p>
+
+          <p>
+            <strong>Placement:</strong>
+            ${booking["Placement"] || ""}
+          </p>
+
+          <p>
+            <strong>Size:</strong>
+            ${booking["Size"] || ""}
+          </p>
+
+          <p>
+            <strong>Preferred date:</strong>
+            ${booking["preferred_date"] || "Not provided"}
+          </p>
+
+          <p>
+            <strong>Preferred time:</strong>
+            ${booking["preferred_time"] || "Not provided"}
+          </p>
+
+          <p>
+            <strong>Additional details:</strong>
+            ${booking["Additional details"] || "None"}
+          </p>
+
+          <p>
+            <strong>Booking status:</strong>
+
+            <span class="status">
+              ${booking["Booking status"] || "Pending"}
+            </span>
+
+          </p>
+
+          <p>
+            <strong>Deposit status:</strong>
+            ${booking["Deposit status"] || "Not paid"}
+          </p>
+
+        `;
+
+
+        bookingsList.appendChild(div);
+
+      }
+    );
+
+  }
+
+
+  catch (error) {
+
+    console.error(
+      "BOOKING LOAD ERROR:",
+      error
+    );
+
+
+    bookingsList.innerHTML = `
+
+      <p class="error">
+        Unable to load bookings.
+      </p>
+
+      <p class="error">
+        ${error.message}
+      </p>
+
+    `;
 
   }
 
 }
 
 
-// REFRESH
+// ===============================
+// REFRESH BOOKINGS
+// ===============================
+
 refreshBookings.addEventListener(
   "click",
   loadBookings
 );
 
 
+// ===============================
 // LOG OUT
+// ===============================
+
 logoutButton.addEventListener(
   "click",
   function() {
@@ -394,22 +532,36 @@ logoutButton.addEventListener(
       "supabase_refresh_token"
     );
 
-    dashboardSection.classList.add("hidden");
-    loginSection.classList.remove("hidden");
+
+    dashboardSection.classList.add(
+      "hidden"
+    );
+
+    loginSection.classList.remove(
+      "hidden"
+    );
 
   }
 );
 
 
+// ===============================
 // CHECK EXISTING LOGIN
+// ===============================
+
 if (
   localStorage.getItem(
     "supabase_access_token"
   )
 ) {
 
-  loginSection.classList.add("hidden");
-  dashboardSection.classList.remove("hidden");
+  loginSection.classList.add(
+    "hidden"
+  );
+
+  dashboardSection.classList.remove(
+    "hidden"
+  );
 
   loadBookings();
 
