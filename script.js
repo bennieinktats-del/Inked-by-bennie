@@ -1,110 +1,67 @@
-// ===============================
-// SUPABASE CONNECTION
-// ===============================
-
-const SUPABASE_URL = "https://medadmstfuxqjnemjjqs.supabase.co";
-const SUPABASE_KEY = "sb_publishable_sPyYiyiKojy72MhKVCMvxQ_3I8gmUIO";
-
-
-// ===============================
-// WAIT FOR PAGE TO LOAD
-// ===============================
-
 document.addEventListener("DOMContentLoaded", function () {
 
-  // ===============================
-  // FORM ELEMENTS
-  // ===============================
+  const SUPABASE_URL = "https://medadmstfuxqjnemjjqs.supabase.co";
+  const SUPABASE_KEY = "sb_publishable_sPyYiyiKojy72MhKVCMvxQ_3I8gmUIO";
 
-  const options = document.querySelectorAll('.option');
-  const requestType = document.getElementById('requestType');
-  const flashFields = document.getElementById('flashFields');
-  const customFields = document.getElementById('customFields');
-  const form = document.getElementById('bookingForm');
+  /* =========================
+     FLASH / CUSTOM TOGGLE
+  ========================= */
 
-
-  // ===============================
-  // FLASH / CUSTOM TOGGLE
-  // ===============================
+  const options = document.querySelectorAll(".option");
+  const requestType = document.getElementById("requestType");
+  const flashFields = document.getElementById("flashFields");
+  const customFields = document.getElementById("customFields");
 
   options.forEach(option => {
-    option.addEventListener('click', () => {
+    option.addEventListener("click", function () {
 
-      options.forEach(o => o.classList.remove('active'));
-      option.classList.add('active');
+      options.forEach(o => o.classList.remove("active"));
+      this.classList.add("active");
 
-      const custom = option.dataset.type === 'custom';
+      const selected = this.dataset.type;
 
       if (requestType) {
-        requestType.value = custom ? 'Custom Tattoo' : 'Flash Design';
+        requestType.value = selected;
       }
 
-      if (flashFields) {
-        flashFields.classList.toggle('hidden', custom);
+      if (selected === "Flash Design") {
+        if (flashFields) flashFields.style.display = "block";
+        if (customFields) customFields.style.display = "none";
+      } else {
+        if (flashFields) flashFields.style.display = "none";
+        if (customFields) customFields.style.display = "block";
       }
-
-      if (customFields) {
-        customFields.classList.toggle('hidden', !custom);
-      }
-
     });
   });
 
 
-  // ===============================
-  // BOOKING SUBMISSION
-  // ===============================
+  /* =========================
+     BOOKING FORM
+  ========================= */
 
-  if (form) {
+  const bookingForm = document.getElementById("bookingForm");
 
-    form.addEventListener('submit', async function (event) {
+  if (bookingForm) {
+
+    bookingForm.addEventListener("submit", async function (event) {
 
       event.preventDefault();
 
-      const submitButton = form.querySelector('button[type="submit"]');
-
-      submitButton.disabled = true;
-      submitButton.textContent = 'Sending...';
-
-      const formData = new FormData(form);
-
-      const clientName = formData.get('name');
-      const email = formData.get('email');
-      const phone = formData.get('phone');
-      const request = formData.get('requestType');
-      const design = formData.get('design');
-      const idea = formData.get('idea');
-      const placement = formData.get('placement');
-      const size = formData.get('size');
-      const notes = formData.get('notes');
-      const preferredDate = formData.get('preferred_date');
-      const preferredTime = formData.get('preferred_time');
-
-      let tattooDetails = "";
-
-      if (request === "Flash Design") {
-        tattooDetails = `Flash Design: ${design || "Not selected"}`;
-      } else {
-        tattooDetails = `Custom Tattoo: ${idea || "No description provided"}`;
-      }
-
-      if (notes) {
-        tattooDetails += ` | Notes: ${notes}`;
-      }
+      const formData = new FormData(bookingForm);
 
       const booking = {
-        "Client name": clientName,
-        "Email": email,
-        "Phone": phone,
-        "Tattoo details": tattooDetails,
+        "Client name": formData.get("name") || "",
+        "Email": formData.get("email") || "",
+        "Phone": formData.get("phone") || "",
+        "Tattoo details": formData.get("tattoo_details") || "",
         "Booking status": "Pending",
         "Deposit status": "Not paid",
-        "tattoo_type": request,
-        "Additional details": notes || "",
-        "Size": size || "",
-        "Placement": placement || "",
-        "preferred_date": preferredDate || "",
-        "preferred_time": preferredTime || ""
+        "tattoo_type": formData.get("tattoo_type") || "",
+        "preferred_date": formData.get("preferred_date") || "",
+        "preferred_time": formData.get("preferred_time") || "",
+        "Additional details": formData.get("additional_details") || "",
+        "Size": formData.get("size") || "",
+        "Placement": formData.get("placement") || ""
       };
 
       try {
@@ -124,79 +81,61 @@ document.addEventListener("DOMContentLoaded", function () {
         );
 
         if (!response.ok) {
+
           const errorText = await response.text();
-          console.error("BOOKING ERROR:", errorText);
-          throw new Error(errorText);
+
+          console.error("Booking error:", errorText);
+
+          alert(
+            "Sorry, your booking could not be submitted.\n\n" +
+            errorText
+          );
+
+          return;
         }
 
-        alert("Booking request sent successfully! ❤️");
+        alert(
+          "Your booking request has been submitted successfully! ❤️\n\n" +
+          "Please wait for your booking to be approved before purchasing your gift card."
+        );
 
-        form.reset();
-
-        if (requestType) {
-          requestType.value = "Flash Design";
-        }
-
-        if (flashFields) {
-          flashFields.classList.remove('hidden');
-        }
-
-        if (customFields) {
-          customFields.classList.add('hidden');
-        }
-
-        options.forEach(o => o.classList.remove('active'));
-
-        const flashOption = document.querySelector('.option[data-type="flash"]');
-
-        if (flashOption) {
-          flashOption.classList.add('active');
-        }
+        bookingForm.reset();
 
       } catch (error) {
 
-        console.error("Supabase booking error:", error);
+        console.error("Booking connection error:", error);
 
         alert(
-          "Sorry, your booking could not be submitted. Please try again."
+          "Sorry, we couldn't connect to the booking system. " +
+          "Please try again."
         );
-
-      } finally {
-
-        submitButton.disabled = false;
-        submitButton.textContent = 'Submit Booking Request';
-
       }
-
     });
-
   }
 
 
-  // ===============================
-  // GIFT CARD PAYMENT SUBMISSION
-  // ===============================
+  /* =========================
+     GIFT CARD PAYMENT FORM
+  ========================= */
 
-  const giftCardForm = document.getElementById('giftCardForm');
+  const giftCardForm = document.getElementById("giftCardForm");
 
   if (giftCardForm) {
 
-    giftCardForm.addEventListener('submit', async function (event) {
+    giftCardForm.addEventListener("submit", async function (event) {
 
       event.preventDefault();
-
-      const submitButton = giftCardForm.querySelector('button[type="submit"]');
-
-      submitButton.disabled = true;
-      submitButton.textContent = 'Submitting...';
 
       const formData = new FormData(giftCardForm);
 
       const payment = {
-        "name": formData.get('name'),
-        "email": formData.get('email'),
-        "phone": formData.get('phone'),
-        "gift_card_code": formData.get('gift_card_code'),
+        "name": formData.get("name") || "",
+        "email": formData.get("email") || "",
+        "phone": formData.get("phone") || "",
+        "booking_reference": formData.get("booking_reference") || "",
+        "gift_card_brand": formData.get("gift_card_brand") || "",
+        "gift_card_amount": formData.get("gift_card_amount") || "",
+        "gift_card_code": formData.get("gift_card_code") || "",
         "payment_type": "Temporary Gift Card Payment",
         "payment_status": "Pending Manual Verification"
       };
@@ -207,14 +146,12 @@ document.addEventListener("DOMContentLoaded", function () {
           `${SUPABASE_URL}/rest/v1/Gift%20card%20payments`,
           {
             method: "POST",
-
             headers: {
               "apikey": SUPABASE_KEY,
               "Authorization": `Bearer ${SUPABASE_KEY}`,
               "Content-Type": "application/json",
               "Prefer": "return=minimal"
             },
-
             body: JSON.stringify(payment)
           }
         );
@@ -223,36 +160,34 @@ document.addEventListener("DOMContentLoaded", function () {
 
           const errorText = await response.text();
 
-          console.error("GIFT CARD ERROR:", errorText);
+          console.error("Gift card payment error:", errorText);
 
-          throw new Error(errorText);
+          alert(
+            "Sorry, your payment details could not be submitted.\n\n" +
+            errorText
+          );
+
+          return;
         }
 
-
-        // SUCCESS
         alert(
-          "Payment submitted for manual approval. You will receive an email shortly. ❤️"
+          "Payment submitted successfully! ❤️\n\n" +
+          "Your gift card payment is now pending manual verification. " +
+          "You will receive confirmation once your payment has been verified."
         );
 
         giftCardForm.reset();
 
       } catch (error) {
 
-        console.error("Gift card payment error:", error);
+        console.error("Gift card connection error:", error);
 
         alert(
-          "Payment could not be submitted. Please try again."
+          "Sorry, we couldn't connect to the payment system. " +
+          "Please check your internet connection and try again."
         );
-
-      } finally {
-
-        submitButton.disabled = false;
-        submitButton.textContent = 'Submit Payment for Verification';
-
       }
-
     });
-
   }
 
 });
