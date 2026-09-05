@@ -522,7 +522,10 @@ async function loadBookings() {
             <strong>Client:</strong>
             ${booking["Client name"] || ""}
           </p>
-
+<p>
+  <strong>Booking reference:</strong>
+  ${booking["booking_reference"] || "Not available"}
+</p>
           <p>
             <strong>Email:</strong>
             ${booking["Email"] || ""}
