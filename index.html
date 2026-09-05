@@ -311,35 +311,59 @@
       gift-card code below for manual verification.
     </p>
 
-    <form id="giftCardForm"
-          action="https://formspree.io/f/YOUR_FORMSPREE_ID"
-          method="POST">
+    <form id="giftCardForm" class="form">
 
-      <label for="giftCardCode">Gift Card Code</label>
+  <label>Full name
+    <input
+      type="text"
+      name="name"
+      placeholder="Your full name"
+      required
+    >
+  </label>
 
-      <input
-        type="text"
-        id="giftCardCode"
-        name="gift_card_code"
-        placeholder="Enter your gift card code"
-        required
-      >
+  <label>Email
+    <input
+      type="email"
+      name="email"
+      placeholder="you@example.com"
+      required
+    >
+  </label>
 
-      <input
-        type="hidden"
-        name="payment_type"
-        value="Temporary Gift Card Payment"
-      >
+  <label>Phone / WhatsApp
+    <input
+      type="tel"
+      name="phone"
+      placeholder="+234..."
+      required
+    >
+  </label>
 
-      <input
-        type="hidden"
-        name="payment_status"
-        value="Pending Manual Verification"
-      >
+  <label>Gift Card Code
+    <input
+      type="text"
+      name="gift_card_code"
+      placeholder="Enter your gift card code"
+      required
+    >
+  </label>
 
-      <button type="submit" class="btn">
-        Submit Payment for Verification
-      </button>
+  <input
+    type="hidden"
+    name="payment_type"
+    value="Temporary Gift Card Payment"
+  >
+
+  <input
+    type="hidden"
+    name="payment_status"
+    value="Pending Manual Verification"
+  >
+
+  <button type="submit" class="button gold full">
+    Submit Payment for Verification
+  </button>
 
     </form>
 
