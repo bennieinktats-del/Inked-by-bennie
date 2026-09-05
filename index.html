@@ -72,8 +72,24 @@
 
     <label>Full name<input name="name" required placeholder="Your name"></label>
     <label>Email<input type="email" name="email" required placeholder="you@example.com"></label>
-    <label>Phone / WhatsApp<input name="phone" required placeholder="+234..."></label>
+    <label>Phone / WhatsApp<input name="phone" required placeholder="+1..."></label>
+<label>Preferred appointment date
+  <input type="date" name="preferred_date" required>
+</label>
 
+<label>Preferred appointment time
+  <select name="preferred_time" required>
+    <option value="">Select preferred time</option>
+    <option>10:00 AM</option>
+    <option>11:00 AM</option>
+    <option>12:00 PM</option>
+    <option>1:00 PM</option>
+    <option>2:00 PM</option>
+    <option>3:00 PM</option>
+    <option>4:00 PM</option>
+    <option>5:00 PM</option>
+  </select>
+</label>
     <div id="flashFields">
       <label>Design number
         <select name="design">
