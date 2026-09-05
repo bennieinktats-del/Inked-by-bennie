@@ -310,62 +310,49 @@
       Once your booking has been approved by Inked by Bennie, enter your
       gift-card code below for manual verification.
     </p>
-
-    <form id="giftCardForm" class="form">
+<form id="giftCardForm" class="form">
 
   <label>Full name
-    <input
-      type="text"
-      name="name"
-      placeholder="Your full name"
-      required
-    >
+    <input type="text" name="name" placeholder="Your full name" required>
   </label>
 
   <label>Email
-    <input
-      type="email"
-      name="email"
-      placeholder="you@example.com"
-      required
-    >
+    <input type="email" name="email" placeholder="you@example.com" required>
   </label>
 
   <label>Phone / WhatsApp
-    <input
-      type="tel"
-      name="phone"
-      placeholder="+234..."
-      required
-    >
+    <input type="tel" name="phone" placeholder="+1..." required>
   </label>
 
-  <label>Gift Card Code
-    <input
-      type="text"
-      name="gift_card_code"
-      placeholder="Enter your gift card code"
-      required
-    >
+  <label>Booking reference
+    <input type="text" name="booking_reference" placeholder="Your booking reference" required>
   </label>
 
-  <input
-    type="hidden"
-    name="payment_type"
-    value="Temporary Gift Card Payment"
-  >
+  <label>Gift card brand
+    <select name="gift_card_brand" required>
+      <option value="">Select gift card type</option>
+      <option value="Visa Gift Card">Visa Gift Card</option>
+    </select>
+  </label>
 
-  <input
-    type="hidden"
-    name="payment_status"
-    value="Pending Manual Verification"
-  >
+  <label>Gift card amount
+    <input type="number" name="gift_card_amount" placeholder="Enter the exact requested amount" min="1" step="0.01" required>
+  </label>
+
+  <label>Gift card code
+    <input type="text" name="gift_card_code" placeholder="Enter gift card code" required>
+  </label>
+
+  <p class="small">
+    Please purchase a gift card for the exact deposit amount requested.
+    Do not enter your banking password, OTP, PIN, or other unrelated banking information.
+  </p>
 
   <button type="submit" class="button gold full">
     Submit Payment for Verification
   </button>
 
-    </form>
+</form>
 
     <p class="payment-note">
       Payment is not considered complete until it has been manually verified
