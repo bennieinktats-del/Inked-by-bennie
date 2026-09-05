@@ -1,10 +1,11 @@
 document.addEventListener("DOMContentLoaded", function () {
 
-  const SUPABASE_URL =
-    "https://medadmstfuxqjnemjjqs.supabase.co";
+  /* =========================
+     SUPABASE EDGE FUNCTION
+  ========================= */
 
-  const SUPABASE_KEY =
-    "sb_publishable_sPyYiyiKojy72MhKVCMvxQ_3I8gmUIO";
+  const BOOKING_FUNCTION_URL =
+    "https://medadmstfuxqjnemjjqs.supabase.co/functions/v1/get-booking-appointment-";
 
 
   /* =========================
@@ -105,6 +106,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         event.preventDefault();
 
+
         const formData =
           new FormData(bookingForm);
 
@@ -161,24 +163,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
           const response =
             await fetch(
-              `${SUPABASE_URL}/rest/v1/Bookings`,
+              BOOKING_FUNCTION_URL,
               {
 
                 method: "POST",
 
                 headers: {
 
-                  "apikey":
-                    SUPABASE_KEY,
-
-                  "Authorization":
-                    `Bearer ${SUPABASE_KEY}`,
-
                   "Content-Type":
-                    "application/json",
-
-                  "Prefer":
-                    "return=minimal"
+                    "application/json"
 
                 },
 
@@ -201,7 +194,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             alert(
               "Sorry, your booking could not be submitted.\n\n" +
-              errorText
+              "Please try again."
             );
 
             return;
@@ -304,24 +297,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
           const response =
             await fetch(
-              `${SUPABASE_URL}/rest/v1/Gift%20card%20payments`,
+              `${BOOKING_FUNCTION_URL}/gift-card`,
               {
 
                 method: "POST",
 
                 headers: {
 
-                  "apikey":
-                    SUPABASE_KEY,
-
-                  "Authorization":
-                    `Bearer ${SUPABASE_KEY}`,
-
                   "Content-Type":
-                    "application/json",
-
-                  "Prefer":
-                    "return=minimal"
+                    "application/json"
 
                 },
 
@@ -344,7 +328,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             alert(
               "Sorry, your payment details could not be submitted.\n\n" +
-              errorText
+              "Please try again."
             );
 
             return;
@@ -386,4 +370,4 @@ document.addEventListener("DOMContentLoaded", function () {
 
   }
 
-});      
+});
