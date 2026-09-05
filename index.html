@@ -344,16 +344,20 @@
       step="0.01"
       required
     >
-  </label>
+  <label>Approved deposit amount
+  <input
+    type="number"
+    id="giftCardAmount"
+    name="gift_card_amount"
+    placeholder="Enter your booking reference first"
+    readonly
+    required
+  >
+</label>
 
-  <label>Gift card code
-    <input
-      type="text"
-      name="gift_card_code"
-      placeholder="Enter gift card code"
-      required
-    >
-  </label>
+<p id="depositMessage" class="small">
+  Enter your booking reference to see your approved deposit amount.
+</p>
 
   <p class="small">
     Please purchase a gift card for the exact deposit amount requested.
