@@ -91,6 +91,32 @@
       color: #ff6b6b;
       word-break: break-word;
     }
+
+    .deposit-box {
+      margin-top: 15px;
+      padding: 15px;
+      border: 1px solid #d4af37;
+      border-radius: 8px;
+      background: #181818;
+    }
+
+    .deposit-box label {
+      display: block;
+      color: #d4af37;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .save-deposit {
+      width: 100%;
+      margin-top: 4px;
+    }
+
+    .saved-message {
+      color: #7CFC98;
+      margin-top: 10px;
+      font-weight: bold;
+    }
   </style>
 </head>
 
@@ -171,8 +197,6 @@ const SUPABASE_URL =
 const SUPABASE_KEY =
   "sb_publishable_sPyYiyiKojy72MhKVCMvxQ_3I8gmUIO";
 
-
-// ADMIN USER UUID
 const ADMIN_USER_ID =
   "a76ab4e3-1744-4d8e-8a62-510a4c4bfb00";
 
@@ -220,7 +244,6 @@ loginForm.addEventListener(
 
     loginMessage.classList.remove("error");
 
-
     try {
 
       const response = await fetch(
@@ -240,10 +263,8 @@ loginForm.addEventListener(
         }
       );
 
-
       const data =
         await response.json();
-
 
       if (!response.ok) {
 
@@ -256,8 +277,6 @@ loginForm.addEventListener(
 
       }
 
-
-      // Save login session
       localStorage.setItem(
         "supabase_access_token",
         data.access_token
@@ -268,19 +287,15 @@ loginForm.addEventListener(
         data.refresh_token
       );
 
-
       loginMessage.textContent = "";
 
       loginSection.classList.add("hidden");
 
       dashboardSection.classList.remove("hidden");
 
-
-      // Load bookings
       loadBookings();
 
     }
-
 
     catch (error) {
 
@@ -301,6 +316,112 @@ loginForm.addEventListener(
 
 
 // ===============================
+// SAVE DEPOSIT AMOUNT
+// ===============================
+
+async function saveDepositAmount(bookingId, inputElement, messageElement) {
+
+  const token =
+    localStorage.getItem(
+      "supabase_access_token"
+    );
+
+  if (!token) {
+
+    messageElement.textContent =
+      "Your admin session has expired. Please log in again.";
+
+    messageElement.className =
+      "error";
+
+    return;
+  }
+
+  const amount =
+    inputElement.value.trim();
+
+  if (!amount || Number(amount) <= 0) {
+
+    messageElement.textContent =
+      "Please enter a valid deposit amount.";
+
+    messageElement.className =
+      "error";
+
+    return;
+  }
+
+  messageElement.textContent =
+    "Saving...";
+
+  messageElement.className =
+    "message";
+
+  try {
+
+    const response = await fetch(
+      `${SUPABASE_URL}/rest/v1/Bookings?idd=eq.${bookingId}`,
+      {
+        method: "PATCH",
+
+        headers: {
+          "apikey": SUPABASE_KEY,
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json",
+          "Prefer": "return=minimal"
+        },
+
+        body: JSON.stringify({
+          deposit_amount: Number(amount)
+        })
+      }
+    );
+
+    const responseText =
+      await response.text();
+
+    if (!response.ok) {
+
+      console.error(
+        "DEPOSIT SAVE ERROR:",
+        responseText
+      );
+
+      throw new Error(
+        responseText ||
+        "Unable to save deposit amount."
+      );
+
+    }
+
+    messageElement.textContent =
+      `Deposit saved: $${Number(amount).toFixed(2)}`;
+
+    messageElement.className =
+      "saved-message";
+
+  }
+
+  catch (error) {
+
+    console.error(
+      "DEPOSIT ERROR:",
+      error
+    );
+
+    messageElement.textContent =
+      "Could not save deposit: " +
+      error.message;
+
+    messageElement.className =
+      "error";
+
+  }
+
+}
+
+
+// ===============================
 // LOAD BOOKINGS
 // ===============================
 
@@ -309,12 +430,10 @@ async function loadBookings() {
   bookingsList.innerHTML =
     "<p>Loading bookings...</p>";
 
-
   const token =
     localStorage.getItem(
       "supabase_access_token"
     );
-
 
   if (!token) {
 
@@ -324,7 +443,6 @@ async function loadBookings() {
     return;
 
   }
-
 
   try {
 
@@ -341,10 +459,8 @@ async function loadBookings() {
       }
     );
 
-
     const responseText =
       await response.text();
-
 
     let bookings;
 
@@ -353,7 +469,9 @@ async function loadBookings() {
       bookings =
         JSON.parse(responseText);
 
-    } catch {
+    }
+
+    catch {
 
       throw new Error(
         "Supabase returned an unexpected response: " +
@@ -361,7 +479,6 @@ async function loadBookings() {
       );
 
     }
-
 
     if (!response.ok) {
 
@@ -371,7 +488,6 @@ async function loadBookings() {
 
     }
 
-
     if (!Array.isArray(bookings)) {
 
       throw new Error(
@@ -379,7 +495,6 @@ async function loadBookings() {
       );
 
     }
-
 
     if (bookings.length === 0) {
 
@@ -390,9 +505,7 @@ async function loadBookings() {
 
     }
 
-
     bookingsList.innerHTML = "";
-
 
     bookings.forEach(
       function(booking) {
@@ -402,7 +515,6 @@ async function loadBookings() {
 
         div.className =
           "booking";
-
 
         div.innerHTML = `
 
@@ -470,8 +582,55 @@ async function loadBookings() {
             ${booking["Deposit status"] || "Not paid"}
           </p>
 
+          <div class="deposit-box">
+
+            <label>
+              Deposit amount
+            </label>
+
+            <input
+              type="number"
+              class="deposit-input"
+              min="1"
+              step="0.01"
+              placeholder="Example: 100"
+              value="${booking["deposit_amount"] || ""}"
+            >
+
+            <button
+              class="gold save-deposit"
+              type="button"
+            >
+              Save Deposit
+            </button>
+
+            <div class="message deposit-message"></div>
+
+          </div>
+
         `;
 
+        const depositInput =
+          div.querySelector(".deposit-input");
+
+        const saveButton =
+          div.querySelector(".save-deposit");
+
+        const depositMessage =
+          div.querySelector(".deposit-message");
+
+        saveButton.addEventListener(
+          "click",
+          function() {
+
+            saveDepositAmount(
+              booking.idd,
+              depositInput,
+              depositMessage
+            );
+
+          }
+        );
 
         bookingsList.appendChild(div);
 
@@ -480,14 +639,12 @@ async function loadBookings() {
 
   }
 
-
   catch (error) {
 
     console.error(
       "BOOKING LOAD ERROR:",
       error
     );
-
 
     bookingsList.innerHTML = `
 
@@ -531,7 +688,6 @@ logoutButton.addEventListener(
     localStorage.removeItem(
       "supabase_refresh_token"
     );
-
 
     dashboardSection.classList.add(
       "hidden"
