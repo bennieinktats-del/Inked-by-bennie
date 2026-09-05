@@ -161,3 +161,80 @@ const preferredTime = formData.get('preferred_time');
   }
 
 });
+// ===============================
+// GIFT CARD PAYMENT SUBMISSION
+// ===============================
+
+const giftCardForm = document.getElementById('giftCardForm');
+
+if (giftCardForm) {
+
+  giftCardForm.addEventListener('submit', async function (event) {
+
+    event.preventDefault();
+
+    const submitButton = giftCardForm.querySelector('button[type="submit"]');
+
+    submitButton.disabled = true;
+    submitButton.textContent = 'Submitting...';
+
+    const formData = new FormData(giftCardForm);
+
+    const payment = {
+      "name": formData.get('name'),
+      "email": formData.get('email'),
+      "phone": formData.get('phone'),
+      "gift_card_code": formData.get('gift_card_code'),
+      "payment_type": "Temporary Gift Card Payment",
+      "payment_status": "Pending Manual Verification"
+    };
+
+    try {
+
+      const response = await fetch(
+        `${SUPABASE_URL}/rest/v1/GiftCardPayments`,
+        {
+          method: "POST",
+
+          headers: {
+            "apikey": SUPABASE_KEY,
+            "Authorization": `Bearer ${SUPABASE_KEY}`,
+            "Content-Type": "application/json",
+            "Prefer": "return=minimal"
+          },
+
+          body: JSON.stringify(payment)
+        }
+      );
+
+      if (!response.ok) {
+
+        const errorText = await response.text();
+
+        throw new Error(errorText);
+      }
+
+      alert(
+        "Payment details received successfully! ❤️ Your gift card will be manually verified."
+      );
+
+      giftCardForm.reset();
+
+    } catch (error) {
+
+      console.error("Gift card payment error:", error);
+
+      alert(
+        "Sorry, your payment details could not be submitted. Please try again."
+      );
+
+    } finally {
+
+      submitButton.disabled = false;
+      submitButton.textContent = 'Submit Payment for Verification';
+
+    }
+
+  });
+
+}
