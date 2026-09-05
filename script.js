@@ -66,7 +66,8 @@ form.addEventListener('submit', async function (event) {
   const placement = formData.get('placement');
   const size = formData.get('size');
   const notes = formData.get('notes');
-
+const preferredDate = formData.get('preferred_date');
+const preferredTime = formData.get('preferred_time');
 
   // Combine tattoo information
   let tattooDetails = "";
