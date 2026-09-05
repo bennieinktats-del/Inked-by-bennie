@@ -95,8 +95,10 @@ const preferredTime = formData.get('preferred_time');
     "Deposit status": "Not paid",
     "tattoo_type": request,
     "Additional details": notes || "",
-    "Size": size,
-    "Placement": placement
+"Size": size,
+"Placement": placement,
+"preferred_date": preferredDate,
+"preferred_time": preferredTime
   };
 
 
