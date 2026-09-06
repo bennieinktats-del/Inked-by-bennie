@@ -773,6 +773,8 @@ headers:{
 },
 
 body:JSON.stringify({
+  "Booking status":status
+})({
 
 client_name:
 clientName,
@@ -900,8 +902,7 @@ payment["booking_reference"] ||
 "";
 
 const status =
-payment["Payment status"] ||
-"";
+  booking["Booking status"] || "";
 
 return `
 
