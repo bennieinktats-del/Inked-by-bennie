@@ -176,7 +176,47 @@ Loading payments...
 </div>
 
 </div>
+<!-- FLASH DESIGNS -->
 
+<div class="card">
+
+<h2>Flash Designs</h2>
+
+<p>Add the designs customers can choose from when booking.</p>
+
+<input
+type="text"
+id="flashDesignName"
+placeholder="Design Name"
+>
+
+<input
+type="number"
+id="flashDesignPrice"
+placeholder="Price"
+step="0.01"
+min="0"
+>
+
+<input
+type="file"
+id="flashDesignImage"
+accept="image/*"
+>
+
+<button
+type="button"
+id="addFlashDesignButton">
+Add Flash Design
+</button>
+
+<div id="flashDesignMessage"></div>
+
+<div id="flashDesignsList">
+Loading flash designs...
+</div>
+
+</div>
 
 <!-- BOOKINGS -->
 
@@ -1305,7 +1345,263 @@ if(savedToken){
 showDashboard();
 
 }
+/* =========================
+FLASH DESIGNS
+========================= */
 
+const flashDesignName =
+document.getElementById("flashDesignName");
+
+const flashDesignPrice =
+document.getElementById("flashDesignPrice");
+
+const flashDesignImage =
+document.getElementById("flashDesignImage");
+
+const addFlashDesignButton =
+document.getElementById("addFlashDesignButton");
+
+const flashDesignMessage =
+document.getElementById("flashDesignMessage");
+
+const flashDesignsList =
+document.getElementById("flashDesignsList");
+
+
+async function loadFlashDesigns(){
+
+flashDesignsList.innerHTML =
+"Loading flash designs...";
+
+try{
+
+const response =
+await fetch(
+`${SUPABASE_URL}/rest/v1/flash_designs?select=*&order=created_at.desc`,
+{
+headers:getHeaders()
+}
+);
+
+if(!response.ok){
+
+throw new Error(
+"Could not load flash designs."
+);
+
+}
+
+const designs =
+await response.json();
+
+if(!designs.length){
+
+flashDesignsList.innerHTML =
+"<p>No flash designs added yet.</p>";
+
+return;
+
+}
+
+flashDesignsList.innerHTML =
+designs.map(function(design){
+
+return `
+
+<div class="booking">
+
+<div class="row">
+<span class="label">Name:</span>
+${design.name || ""}
+</div>
+
+<div class="row">
+<span class="label">Price:</span>
+$${design.price || ""}
+</div>
+
+${design.image_url ? `
+<img
+src="${design.image_url}"
+style="width:100%;max-width:300px;border-radius:8px;margin-top:10px;"
+>
+` : ""}
+
+</div>
+
+`;
+
+}).join("");
+
+}
+catch(error){
+
+console.error(error);
+
+flashDesignsList.innerHTML =
+`<p>${error.message}</p>`;
+
+}
+
+}
+
+
+addFlashDesignButton.addEventListener(
+"click",
+async function(){
+
+const name =
+flashDesignName.value.trim();
+
+const price =
+flashDesignPrice.value.trim();
+
+const file =
+flashDesignImage.files[0];
+
+if(!name){
+
+alert("Please enter a design name.");
+
+return;
+
+}
+
+if(!price){
+
+alert("Please enter a price.");
+
+return;
+
+}
+
+if(!file){
+
+alert("Please select an image.");
+
+return;
+
+}
+
+
+addFlashDesignButton.disabled = true;
+
+flashDesignMessage.textContent =
+"Uploading design...";
+
+
+try{
+
+const fileName =
+`${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g,"-")}`;
+
+
+const uploadResponse =
+await fetch(
+`${SUPABASE_URL}/storage/v1/object/flash-designs/${encodeURIComponent(fileName)}`,
+{
+method:"POST",
+
+headers:{
+"Authorization":
+`Bearer ${localStorage.getItem("admin_access_token")}`,
+
+"apikey":
+SUPABASE_KEY,
+
+"Content-Type":
+file.type
+},
+
+body:file
+}
+);
+
+
+if(!uploadResponse.ok){
+
+const text =
+await uploadResponse.text();
+
+throw new Error(
+text ||
+"Could not upload image."
+);
+
+}
+
+
+const imageUrl =
+`${SUPABASE_URL}/storage/v1/object/public/flash-designs/${encodeURIComponent(fileName)}`;
+
+
+const saveResponse =
+await fetch(
+`${SUPABASE_URL}/rest/v1/flash_designs`,
+{
+method:"POST",
+
+headers:{
+...getHeaders(),
+"Prefer":"return=minimal"
+},
+
+body:JSON.stringify({
+
+name:name,
+
+price:price,
+
+image_url:imageUrl
+
+})
+}
+);
+
+
+if(!saveResponse.ok){
+
+const text =
+await saveResponse.text();
+
+throw new Error(
+text ||
+"Image uploaded but design could not be saved."
+);
+
+}
+
+
+flashDesignName.value = "";
+
+flashDesignPrice.value = "";
+
+flashDesignImage.value = "";
+
+flashDesignMessage.textContent =
+"Flash design added successfully.";
+
+await loadFlashDesigns();
+
+}
+catch(error){
+
+console.error(error);
+
+flashDesignMessage.textContent =
+error.message;
+
+}
+finally{
+
+addFlashDesignButton.disabled = false;
+
+}
+
+});
+
+
+loadFlashDesigns();
 </script>
 
 </body>
