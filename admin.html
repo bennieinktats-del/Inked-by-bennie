@@ -21,9 +21,7 @@ body{
   margin:30px auto;
 }
 
-h1,h2{
-  color:#d4af37;
-}
+h1,h2{color:#d4af37}
 
 .card{
   background:#111;
@@ -55,9 +53,7 @@ button{
   cursor:pointer;
 }
 
-button:hover{
-  opacity:.85;
-}
+button:hover{opacity:.85}
 
 .danger{
   background:#8b0000;
@@ -69,11 +65,7 @@ button:hover{
   color:#fff;
 }
 
-.message{
-  margin-top:10px;
-  padding:10px;
-  border-radius:6px;
-}
+.hidden{display:none}
 
 .booking,.payment{
   border:1px solid #333;
@@ -106,12 +98,12 @@ button:hover{
   margin-top:12px;
 }
 
-.actions button{
-  margin:0;
-}
+.actions button{margin:0}
 
-.hidden{
-  display:none;
+.message{
+  margin-top:10px;
+  padding:10px;
+  border-radius:6px;
 }
 </style>
 </head>
@@ -169,7 +161,7 @@ Logout
 </div>
 
 
-<!-- GIFT CARD PAYMENTS -->
+<!-- PAYMENTS -->
 
 <div class="card">
 
@@ -231,6 +223,9 @@ const PAYMENT_APPROVAL_EMAIL_FUNCTION_URL =
 "https://medadmstfuxqjnemjjqs.supabase.co/functions/v1/send-approved-booking-email";
 
 
+let currentBookings = [];
+
+
 const loginSection =
 document.getElementById("loginSection");
 
@@ -254,9 +249,9 @@ document.getElementById("bookingsList");
 LOGIN
 ========================= */
 
-loginForm.addEventListener("submit", async function(e){
+loginForm.addEventListener("submit", async function(event){
 
-e.preventDefault();
+event.preventDefault();
 
 const email =
 document.getElementById("adminEmail").value.trim();
@@ -267,12 +262,10 @@ document.getElementById("adminPassword").value;
 loginMessage.textContent =
 "Logging in...";
 
-loginMessage.className =
-"message";
-
 try{
 
-const response = await fetch(
+const response =
+await fetch(
 `${SUPABASE_URL}/auth/v1/token?grant_type=password`,
 {
 method:"POST",
@@ -345,9 +338,6 @@ loginMessage.textContent =
 error.message ||
 "Login failed.";
 
-loginMessage.className =
-"message";
-
 }
 
 });
@@ -394,7 +384,7 @@ loginSection.classList.remove("hidden");
 
 
 /* =========================
-AUTH HEADERS
+HEADERS
 ========================= */
 
 function getHeaders(){
@@ -404,7 +394,7 @@ localStorage.getItem(
 "admin_access_token"
 );
 
-return {
+return{
 
 "apikey":SUPABASE_KEY,
 
@@ -449,6 +439,9 @@ throw new Error(
 const bookings =
 await response.json();
 
+currentBookings = bookings;
+
+
 if(!bookings.length){
 
 bookingsList.innerHTML =
@@ -458,8 +451,9 @@ return;
 
 }
 
+
 bookingsList.innerHTML =
-bookings.map(booking => {
+bookings.map(function(booking,index){
 
 const reference =
 booking["Booking reference"] ||
@@ -468,12 +462,13 @@ booking["booking reference"] ||
 "";
 
 const status =
-booking["Status"] || "";
+booking["Booking status"] || "";
 
 const deposit =
 booking["Deposit amount"] ||
 booking["deposit_amount"] ||
 "";
+
 
 return `
 
@@ -519,6 +514,7 @@ ${booking["Preferred date"] || ""}
 ${booking["Preferred time"] || ""}
 </div>
 
+
 <div class="deposit-box">
 
 <div class="label">
@@ -535,27 +531,32 @@ placeholder="Enter deposit amount"
 >
 
 <button
+type="button"
 onclick="saveDeposit('${booking.idd}')">
 Save Deposit
 </button>
 
 </div>
 
+
 <div class="row">
-<span class="label">Status:</span>
+<span class="label">Booking Status:</span>
 ${status}
 </div>
+
 
 <div class="actions">
 
 <button
-onclick='approveBooking(${JSON.stringify(booking)})'>
+type="button"
+onclick="approveBookingByIndex(${index})">
 Approve Booking
 </button>
 
 <button
+type="button"
 class="danger"
-onclick='rejectBooking(${JSON.stringify(booking)})'>
+onclick="rejectBookingByIndex(${index})">
 Reject Booking
 </button>
 
@@ -593,7 +594,9 @@ document.getElementById(
 
 if(!input){
 
-alert("Deposit field not found.");
+alert(
+"Deposit field not found."
+);
 
 return;
 
@@ -672,10 +675,8 @@ UPDATE BOOKING STATUS
 
 async function updateBookingStatus(
 booking,
-status
+newStatus
 ){
-
-try{
 
 const response =
 await fetch(
@@ -689,7 +690,10 @@ headers:{
 },
 
 body:JSON.stringify({
-Status:status
+
+"Booking status":
+newStatus
+
 })
 }
 );
@@ -701,17 +705,8 @@ await response.text();
 
 throw new Error(
 text ||
-"Update failed."
+"Could not update booking status."
 );
-
-}
-
-await loadBookings();
-
-}
-catch(error){
-
-alert(error.message);
 
 }
 
@@ -722,7 +717,29 @@ alert(error.message);
 APPROVE BOOKING
 ========================= */
 
-async function approveBooking(booking){
+async function approveBookingByIndex(index){
+
+const booking =
+currentBookings[index];
+
+if(!booking){
+
+alert(
+"Booking could not be found."
+);
+
+return;
+
+}
+
+if(!confirm(
+"Approve this booking?"
+)){
+
+return;
+
+}
+
 
 const reference =
 booking["Booking reference"] ||
@@ -746,13 +763,6 @@ booking["Deposit amount"] ||
 booking["deposit_amount"] ||
 "";
 
-if(!confirm(
-"Approve this booking?"
-)){
-
-return;
-
-}
 
 try{
 
@@ -760,6 +770,9 @@ await updateBookingStatus(
 booking,
 "Approved"
 );
+
+await loadBookings();
+
 
 const response =
 await fetch(
@@ -773,8 +786,6 @@ headers:{
 },
 
 body:JSON.stringify({
-  "Booking status":status
-})({
 
 client_name:
 clientName,
@@ -798,14 +809,11 @@ deposit
 }
 );
 
+
 if(!response.ok){
 
-const text =
-await response.text();
-
 console.error(
-"Booking approval email error:",
-text
+await response.text()
 );
 
 alert(
@@ -816,6 +824,7 @@ return;
 
 }
 
+
 alert(
 "Booking approved and email sent."
 );
@@ -825,7 +834,9 @@ catch(error){
 
 console.error(error);
 
-alert(error.message);
+alert(
+error.message
+);
 
 }
 
@@ -836,7 +847,20 @@ alert(error.message);
 REJECT BOOKING
 ========================= */
 
-async function rejectBooking(booking){
+async function rejectBookingByIndex(index){
+
+const booking =
+currentBookings[index];
+
+if(!booking){
+
+alert(
+"Booking could not be found."
+);
+
+return;
+
+}
 
 if(!confirm(
 "Reject this booking?"
@@ -846,10 +870,30 @@ return;
 
 }
 
+
+try{
+
 await updateBookingStatus(
 booking,
 "Rejected"
 );
+
+alert(
+"Booking rejected."
+);
+
+await loadBookings();
+
+}
+catch(error){
+
+console.error(error);
+
+alert(
+error.message
+);
+
+}
 
 }
 
@@ -884,6 +928,7 @@ throw new Error(
 const payments =
 await response.json();
 
+
 if(!payments.length){
 
 paymentsList.innerHTML =
@@ -893,8 +938,9 @@ return;
 
 }
 
+
 paymentsList.innerHTML =
-payments.map(payment => {
+payments.map(function(payment,index){
 
 const reference =
 payment["Booking reference"] ||
@@ -902,7 +948,9 @@ payment["booking_reference"] ||
 "";
 
 const status =
-  booking["Booking status"] || "";
+payment["Payment status"] ||
+"";
+
 
 return `
 
@@ -956,13 +1004,15 @@ ${status}
 <div class="actions">
 
 <button
-onclick="approveBookingById('${booking.idd}')"
+type="button"
+onclick="approvePaymentByIndex(${index})">
 Approve Payment
 </button>
 
 <button
+type="button"
 class="danger"
-onclick="rejectBookingById('${booking.idd}')"
+onclick="rejectPaymentByIndex(${index})">
 Reject Payment
 </button>
 
@@ -973,6 +1023,10 @@ Reject Payment
 `;
 
 }).join("");
+
+
+window.currentPayments =
+payments;
 
 }
 catch(error){
@@ -988,12 +1042,12 @@ paymentsList.innerHTML =
 
 
 /* =========================
-UPDATE PAYMENT STATUS
+UPDATE PAYMENT
 ========================= */
 
 async function updatePaymentStatus(
 payment,
-status
+newStatus
 ){
 
 const reference =
@@ -1009,6 +1063,7 @@ throw new Error(
 
 }
 
+
 const response =
 await fetch(
 `${SUPABASE_URL}/rest/v1/Gift%20card%20payments?Booking%20reference=eq.${encodeURIComponent(reference)}`,
@@ -1023,11 +1078,12 @@ headers:{
 body:JSON.stringify({
 
 "Payment status":
-status
+newStatus
 
 })
 }
 );
+
 
 if(!response.ok){
 
@@ -1036,7 +1092,7 @@ await response.text();
 
 throw new Error(
 text ||
-"Payment update failed."
+"Could not update payment status."
 );
 
 }
@@ -1048,7 +1104,21 @@ text ||
 APPROVE PAYMENT
 ========================= */
 
-async function approvePayment(payment){
+async function approvePaymentByIndex(index){
+
+const payment =
+window.currentPayments[index];
+
+if(!payment){
+
+alert(
+"Payment could not be found."
+);
+
+return;
+
+}
+
 
 if(!confirm(
 "Approve this payment?"
@@ -1058,10 +1128,12 @@ return;
 
 }
 
+
 const reference =
 payment["Booking reference"] ||
 payment["booking_reference"] ||
 "";
+
 
 try{
 
@@ -1069,6 +1141,7 @@ await updatePaymentStatus(
 payment,
 "Approved"
 );
+
 
 const response =
 await fetch(
@@ -1105,6 +1178,7 @@ payment["Deposit amount"] || ""
 }
 );
 
+
 if(!response.ok){
 
 console.error(
@@ -1121,6 +1195,7 @@ return;
 
 }
 
+
 alert(
 "Payment approved and email sent."
 );
@@ -1132,7 +1207,9 @@ catch(error){
 
 console.error(error);
 
-alert(error.message);
+alert(
+error.message
+);
 
 }
 
@@ -1143,7 +1220,21 @@ alert(error.message);
 REJECT PAYMENT
 ========================= */
 
-async function rejectPayment(payment){
+async function rejectPaymentByIndex(index){
+
+const payment =
+window.currentPayments[index];
+
+if(!payment){
+
+alert(
+"Payment could not be found."
+);
+
+return;
+
+}
+
 
 if(!confirm(
 "Reject this payment?"
@@ -1152,6 +1243,7 @@ if(!confirm(
 return;
 
 }
+
 
 try{
 
@@ -1171,7 +1263,9 @@ catch(error){
 
 console.error(error);
 
-alert(error.message);
+alert(
+error.message
+);
 
 }
 
@@ -1179,7 +1273,7 @@ alert(error.message);
 
 
 /* =========================
-REFRESH BUTTONS
+REFRESH
 ========================= */
 
 document
