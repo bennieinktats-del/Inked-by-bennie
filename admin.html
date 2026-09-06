@@ -956,13 +956,13 @@ ${status}
 <div class="actions">
 
 <button
-onclick='approvePayment(${JSON.stringify(payment)})'>
+onclick="approveBookingById('${booking.idd}')"
 Approve Payment
 </button>
 
 <button
 class="danger"
-onclick='rejectPayment(${JSON.stringify(payment)})'>
+onclick="rejectBookingById('${booking.idd}')"
 Reject Payment
 </button>
 
