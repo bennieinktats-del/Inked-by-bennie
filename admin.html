@@ -7,7 +7,6 @@
   <title>Inked by Bennie — Admin</title>
 
   <style>
-
     * {
       box-sizing: border-box;
     }
@@ -107,13 +106,14 @@
     }
 
     .hidden {
-      display: none;
+      display: none !important;
     }
 
     .message {
       margin-top: 10px;
       padding: 10px;
       border-radius: 6px;
+      min-height: 20px;
     }
 
     .error {
@@ -158,6 +158,17 @@
       min-width: 130px;
     }
 
+    .login-button {
+      width: 100%;
+      margin-top: 5px;
+    }
+
+    .login-help {
+      color: #aaa;
+      font-size: 14px;
+      line-height: 1.5;
+      margin-top: 15px;
+    }
   </style>
 </head>
 
@@ -165,7 +176,9 @@
 
 <div class="container">
 
+  <!-- ========================= -->
   <!-- LOGIN -->
+  <!-- ========================= -->
 
   <div id="loginSection" class="card">
 
@@ -175,26 +188,33 @@
 
     <form id="loginForm">
 
-      <label>Email</label>
+      <label for="adminEmail">
+        Email
+      </label>
 
       <input
         type="email"
         id="adminEmail"
         required
+        autocomplete="username"
         placeholder="Admin email"
       >
 
-      <label>Password</label>
+      <label for="adminPassword">
+        Password
+      </label>
 
       <input
         type="password"
         id="adminPassword"
         required
+        autocomplete="current-password"
         placeholder="Password"
       >
 
       <button
-        class="gold"
+        id="loginButton"
+        class="gold login-button"
         type="submit"
       >
         Login
@@ -205,12 +225,19 @@
     <div
       id="loginMessage"
       class="message"
+      aria-live="polite"
     ></div>
+
+    <p class="login-help">
+      This area is for Inked by Bennie administration only.
+    </p>
 
   </div>
 
 
+  <!-- ========================= -->
   <!-- ADMIN DASHBOARD -->
+  <!-- ========================= -->
 
   <div
     id="dashboardSection"
@@ -220,6 +247,7 @@
     <button
       id="logoutButton"
       class="logout"
+      type="button"
     >
       Log out
     </button>
@@ -233,6 +261,7 @@
       <button
         id="refreshBookings"
         class="gold"
+        type="button"
       >
         Refresh Bookings
       </button>
@@ -250,6 +279,13 @@
 
 <script>
 
+"use strict";
+
+
+// ==========================================
+// SUPABASE SETTINGS
+// ==========================================
+
 const SUPABASE_URL =
   "https://medadmstfuxqjnemjjqs.supabase.co";
 
@@ -265,14 +301,17 @@ const APPROVAL_EMAIL_FUNCTION_URL =
   "https://medadmstfuxqjnemjjqs.supabase.co/functions/v1/enking-approval";
 
 
-/*
-  ONLY THIS USER IS ALLOWED
-  TO ACCESS THE ADMIN DASHBOARD.
-*/
+// ==========================================
+// ADMIN USER
+// ==========================================
 
 const ADMIN_USER_ID =
   "a76ab4e3-1744-4d8e-8a62-510a4c4bfb00";
 
+
+// ==========================================
+// ELEMENTS
+// ==========================================
 
 const loginSection =
   document.getElementById("loginSection");
@@ -286,6 +325,9 @@ const loginForm =
 const loginMessage =
   document.getElementById("loginMessage");
 
+const loginButton =
+  document.getElementById("loginButton");
+
 const bookingsList =
   document.getElementById("bookingsList");
 
@@ -296,15 +338,45 @@ const refreshBookings =
   document.getElementById("refreshBookings");
 
 
-// ===============================
+// ==========================================
+// SHOW LOGIN
+// ==========================================
+
+function showLogin() {
+
+  loginSection.classList.remove("hidden");
+
+  dashboardSection.classList.add("hidden");
+
+}
+
+
+// ==========================================
+// SHOW DASHBOARD
+// ==========================================
+
+function showDashboard() {
+
+  loginSection.classList.add("hidden");
+
+  dashboardSection.classList.remove("hidden");
+
+  loadBookings();
+
+}
+
+
+// ==========================================
 // LOGIN
-// ===============================
+// ==========================================
 
 loginForm.addEventListener(
   "submit",
   async function(event) {
 
     event.preventDefault();
+
+    event.stopPropagation();
 
     const email =
       document
@@ -317,11 +389,31 @@ loginForm.addEventListener(
         .getElementById("adminPassword")
         .value;
 
-    loginMessage.textContent =
+
+    if (!email || !password) {
+
+      loginMessage.textContent =
+        "Please enter your email and password.";
+
+      loginMessage.className =
+        "message error";
+
+      return;
+
+    }
+
+
+    loginButton.disabled = true;
+
+    loginButton.textContent =
       "Logging in...";
+
+    loginMessage.textContent =
+      "Checking your login details...";
 
     loginMessage.className =
       "message";
+
 
     try {
 
@@ -344,8 +436,26 @@ loginForm.addEventListener(
         );
 
 
-      const data =
-        await response.json();
+      const responseText =
+        await response.text();
+
+
+      let data = {};
+
+      try {
+
+        data =
+          responseText
+            ? JSON.parse(responseText)
+            : {};
+
+      } catch {
+
+        throw new Error(
+          "Supabase returned an unexpected login response."
+        );
+
+      }
 
 
       if (!response.ok) {
@@ -354,7 +464,20 @@ loginForm.addEventListener(
           data.error_description ||
           data.msg ||
           data.message ||
-          "Login failed"
+          data.error ||
+          "Login failed. Please check your email and password."
+        );
+
+      }
+
+
+      if (
+        !data.access_token ||
+        !data.refresh_token
+      ) {
+
+        throw new Error(
+          "Login succeeded, but Supabase did not return a valid session."
         );
 
       }
@@ -362,6 +485,27 @@ loginForm.addEventListener(
 
       if (
         !data.user ||
+        !data.user.id
+      ) {
+
+        throw new Error(
+          "Supabase did not return your user account."
+        );
+
+      }
+
+
+      console.log(
+        "Logged-in Supabase user ID:",
+        data.user.id
+      );
+
+
+      // --------------------------------------
+      // CHECK ADMIN USER
+      // --------------------------------------
+
+      if (
         data.user.id !== ADMIN_USER_ID
       ) {
 
@@ -374,11 +518,15 @@ loginForm.addEventListener(
         );
 
         throw new Error(
-          "This account is not authorized to access the admin dashboard."
+          "Your login details are correct, but this Supabase account is not authorized as the Inked by Bennie admin."
         );
 
       }
 
+
+      // --------------------------------------
+      // SAVE SESSION
+      // --------------------------------------
 
       localStorage.setItem(
         "supabase_access_token",
@@ -391,17 +539,14 @@ loginForm.addEventListener(
       );
 
 
-      loginMessage.textContent = "";
+      loginMessage.textContent =
+        "Login successful.";
 
-      loginSection.classList.add(
-        "hidden"
-      );
+      loginMessage.className =
+        "message success";
 
-      dashboardSection.classList.remove(
-        "hidden"
-      );
 
-      loadBookings();
+      showDashboard();
 
     }
 
@@ -412,12 +557,22 @@ loginForm.addEventListener(
         error
       );
 
+
       loginMessage.textContent =
         error.message ||
         "Login failed. Please check your email and password.";
 
       loginMessage.className =
         "message error";
+
+    }
+
+    finally {
+
+      loginButton.disabled = false;
+
+      loginButton.textContent =
+        "Login";
 
     }
 
@@ -431,84 +586,87 @@ loginForm.addEventListener(
 
 async function sendApprovalEmail(booking) {
 
-  try {
+  const response =
+    await fetch(
+      APPROVAL_EMAIL_FUNCTION_URL,
+      {
+        method: "POST",
 
-    const response =
-      await fetch(
-        APPROVAL_EMAIL_FUNCTION_URL,
-        {
-          method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
 
-          headers: {
-            "Content-Type": "application/json"
-          },
+        body: JSON.stringify({
 
-          body: JSON.stringify({
+          client_name:
+            booking["Client name"] || "there",
 
-            client_name:
-              booking["Client name"] || "there",
+          email:
+            booking["Email"],
 
-            email:
-              booking["Email"],
+          booking_reference:
+            booking["booking_reference"],
 
-            booking_reference:
-              booking["booking_reference"],
+          preferred_date:
+            booking["preferred_date"],
 
-            preferred_date:
-              booking["preferred_date"],
+          preferred_time:
+            booking["preferred_time"],
 
-            preferred_time:
-              booking["preferred_time"],
+          deposit_amount:
+            booking["deposit_amount"]
 
-            deposit_amount:
-              booking["deposit_amount"]
+        })
 
-          })
-
-        }
-      );
-
-
-    const result =
-      await response.json();
-
-
-    if (!response.ok) {
-
-      console.error(
-        "APPROVAL EMAIL ERROR:",
-        result
-      );
-
-      throw new Error(
-        result.error ||
-        "Approval email could not be sent."
-      );
-
-    }
-
-
-    return result;
-
-  }
-
-  catch(error) {
-
-    console.error(
-      "EMAIL FUNCTION ERROR:",
-      error
+      }
     );
 
-    throw error;
+
+  const responseText =
+    await response.text();
+
+
+  let result = {};
+
+  try {
+
+    result =
+      responseText
+        ? JSON.parse(responseText)
+        : {};
+
+  } catch {
+
+    throw new Error(
+      "Approval email function returned an unexpected response."
+    );
 
   }
+
+
+  if (!response.ok) {
+
+    console.error(
+      "APPROVAL EMAIL ERROR:",
+      result
+    );
+
+    throw new Error(
+      result.error ||
+      "Approval email could not be sent."
+    );
+
+  }
+
+
+  return result;
 
 }
 
 
-// ===============================
+// ==========================================
 // UPDATE BOOKING STATUS
-// ===============================
+// ==========================================
 
 async function updateBookingStatus(
   booking,
@@ -529,6 +687,8 @@ async function updateBookingStatus(
 
     messageElement.className =
       "message error";
+
+    showLogin();
 
     return;
 
@@ -681,9 +841,9 @@ async function updateBookingStatus(
 }
 
 
-// ===============================
+// ==========================================
 // SAVE DEPOSIT AMOUNT
-// ===============================
+// ==========================================
 
 async function saveDepositAmount(
   bookingId,
@@ -704,6 +864,8 @@ async function saveDepositAmount(
 
     messageElement.className =
       "message error";
+
+    showLogin();
 
     return;
 
@@ -778,11 +940,6 @@ async function saveDepositAmount(
 
     if (!response.ok) {
 
-      console.error(
-        "DEPOSIT SAVE ERROR:",
-        responseText
-      );
-
       throw new Error(
         responseText ||
         "Unable to save deposit amount."
@@ -792,7 +949,7 @@ async function saveDepositAmount(
 
 
     messageElement.textContent =
-      `Deposit saved: $${Number(amount).toFixed(2)}`;
+      `Deposit saved: ₦${Number(amount).toLocaleString()}`;
 
     messageElement.className =
       "message success";
@@ -818,9 +975,9 @@ async function saveDepositAmount(
 }
 
 
-// ===============================
+// ==========================================
 // LOAD BOOKINGS
-// ===============================
+// ==========================================
 
 async function loadBookings() {
 
@@ -838,6 +995,8 @@ async function loadBookings() {
 
     bookingsList.innerHTML =
       "<p class='error'>Your admin session has expired. Please log in again.</p>";
+
+    showLogin();
 
     return;
 
@@ -1021,36 +1180,31 @@ async function loadBookings() {
           </p>
 
           <p>
-
             <strong>Booking status:</strong>
 
             <span class="status ${statusClass}">
               ${currentStatus}
             </span>
-
           </p>
 
           <p>
-
             <strong>Deposit status:</strong>
-
             ${booking["Deposit status"] || "Not paid"}
-
           </p>
 
 
           <div class="deposit-box">
 
             <label>
-              Deposit amount
+              50% Deposit Amount
             </label>
 
             <input
               type="number"
               class="deposit-input"
               min="1"
-              step="0.01"
-              placeholder="Example: 100"
+              step="1"
+              placeholder="Example: 50000"
               value="${booking["deposit_amount"] || ""}"
             >
 
@@ -1135,13 +1289,9 @@ async function loadBookings() {
           function() {
 
             saveDepositAmount(
-
               booking.idd,
-
               depositInput,
-
               depositMessage
-
             );
 
           }
@@ -1153,13 +1303,9 @@ async function loadBookings() {
           function() {
 
             updateBookingStatus(
-
               booking,
-
               "Approved",
-
               statusMessage
-
             );
 
           }
@@ -1171,13 +1317,9 @@ async function loadBookings() {
           function() {
 
             updateBookingStatus(
-
               booking,
-
               "Rejected",
-
               statusMessage
-
             );
 
           }
@@ -1217,9 +1359,9 @@ async function loadBookings() {
 }
 
 
-// ===============================
+// ==========================================
 // REFRESH BOOKINGS
-// ===============================
+// ==========================================
 
 refreshBookings.addEventListener(
   "click",
@@ -1227,9 +1369,9 @@ refreshBookings.addEventListener(
 );
 
 
-// ===============================
+// ==========================================
 // LOG OUT
-// ===============================
+// ==========================================
 
 logoutButton.addEventListener(
   "click",
@@ -1243,29 +1385,39 @@ logoutButton.addEventListener(
       "supabase_refresh_token"
     );
 
+    showLogin();
 
-    dashboardSection.classList.add(
-      "hidden"
-    );
+    loginMessage.textContent =
+      "You have been logged out.";
 
-
-    loginSection.classList.remove(
-      "hidden"
-    );
+    loginMessage.className =
+      "message success";
 
   }
 );
 
 
-// ===============================
+// ==========================================
 // CHECK EXISTING LOGIN
-// ===============================
+// ==========================================
 
-if (
+const existingToken =
   localStorage.getItem(
     "supabase_access_token"
-  )
-) {
+  );
 
-  loginSection.classList.add(
-    "hidden"
+
+if (existingToken) {
+
+  showDashboard();
+
+} else {
+
+  showLogin();
+
+}
+
+</script>
+
+</body>
+</html>
