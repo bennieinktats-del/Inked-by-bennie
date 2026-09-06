@@ -178,17 +178,16 @@
       background: #101010;
     }
 
-    .payment-code {
-      word-break: break-all;
-      font-family: monospace;
-      background: #222;
-      padding: 8px;
-      border-radius: 5px;
+    .payment-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+      flex-wrap: wrap;
     }
 
-    .small-note {
-      color: #aaa;
-      font-size: 13px;
+    .payment-actions button {
+      flex: 1;
+      min-width: 130px;
     }
   </style>
 </head>
@@ -197,9 +196,7 @@
 
 <div class="container">
 
-  <!-- ========================= -->
   <!-- LOGIN -->
-  <!-- ========================= -->
 
   <div id="loginSection" class="card">
 
@@ -256,9 +253,7 @@
   </div>
 
 
-  <!-- ========================= -->
-  <!-- ADMIN DASHBOARD -->
-  <!-- ========================= -->
+  <!-- DASHBOARD -->
 
   <div
     id="dashboardSection"
@@ -276,9 +271,7 @@
     <h1>Admin Dashboard</h1>
 
 
-    <!-- ========================= -->
     <!-- GIFT CARD PAYMENTS -->
-    <!-- ========================= -->
 
     <div class="card">
 
@@ -299,9 +292,7 @@
     </div>
 
 
-    <!-- ========================= -->
     <!-- BOOKINGS -->
-    <!-- ========================= -->
 
     <div class="card">
 
@@ -343,8 +334,7 @@ const SUPABASE_KEY =
 
 
 // ==========================================
-// BOOKING APPROVAL EMAIL FUNCTION
-// DO NOT CHANGE THIS
+// BOOKING APPROVAL EMAIL
 // ==========================================
 
 const APPROVAL_EMAIL_FUNCTION_URL =
@@ -352,7 +342,7 @@ const APPROVAL_EMAIL_FUNCTION_URL =
 
 
 // ==========================================
-// PAYMENT APPROVAL EMAIL FUNCTION
+// PAYMENT APPROVAL EMAIL
 // ==========================================
 
 const PAYMENT_APPROVAL_EMAIL_FUNCTION_URL =
@@ -373,9 +363,6 @@ const ADMIN_USER_ID =
 
 const loginSection =
   document.getElementById("loginSection");
-  if (!loginForm) {
-  alert("Login form was not found.");
-  }
 
 const dashboardSection =
   document.getElementById("dashboardSection");
@@ -392,14 +379,14 @@ const loginButton =
 const bookingsList =
   document.getElementById("bookingsList");
 
-const paymentsList =
-  document.getElementById("paymentsList");
-
 const logoutButton =
   document.getElementById("logoutButton");
 
 const refreshBookings =
   document.getElementById("refreshBookings");
+
+const paymentsList =
+  document.getElementById("paymentsList");
 
 const refreshPayments =
   document.getElementById("refreshPayments");
@@ -518,9 +505,7 @@ loginForm.addEventListener(
             ? JSON.parse(responseText)
             : {};
 
-      }
-
-      catch {
+      } catch {
 
         throw new Error(
           "Supabase returned an unexpected login response."
@@ -566,27 +551,9 @@ loginForm.addEventListener(
       }
 
 
-      console.log(
-        "Logged-in Supabase user ID:",
-        data.user.id
-      );
-
-
-      // --------------------------------------
-      // CHECK ADMIN USER
-      // --------------------------------------
-
       if (
         data.user.id !== ADMIN_USER_ID
       ) {
-
-        localStorage.removeItem(
-          "supabase_access_token"
-        );
-
-        localStorage.removeItem(
-          "supabase_refresh_token"
-        );
 
         throw new Error(
           "Your login details are correct, but this Supabase account is not authorized as the Inked by Bennie admin."
@@ -594,10 +561,6 @@ loginForm.addEventListener(
 
       }
 
-
-      // --------------------------------------
-      // SAVE SESSION
-      // --------------------------------------
 
       localStorage.setItem(
         "supabase_access_token",
@@ -652,30 +615,7 @@ loginForm.addEventListener(
 
 
 // ==========================================
-// LOG OUT
-// ==========================================
-
-logoutButton.addEventListener(
-  "click",
-  function() {
-
-    localStorage.removeItem(
-      "supabase_access_token"
-    );
-
-    localStorage.removeItem(
-      "supabase_refresh_token"
-    );
-
-    showLogin();
-
-  }
-);
-
-
-// ==========================================
-// SEND BOOKING APPROVAL EMAIL
-// THIS IS ONLY FOR BOOKING APPROVAL
+// BOOKING APPROVAL EMAIL
 // ==========================================
 
 async function sendApprovalEmail(booking) {
@@ -739,7 +679,6 @@ async function sendApprovalEmail(booking) {
 
   let result = {};
 
-
   try {
 
     result =
@@ -747,9 +686,7 @@ async function sendApprovalEmail(booking) {
         ? JSON.parse(responseText)
         : {};
 
-  }
-
-  catch {
+  } catch {
 
     throw new Error(
       "Approval email function returned an unexpected response."
@@ -759,11 +696,6 @@ async function sendApprovalEmail(booking) {
 
 
   if (!response.ok) {
-
-    console.error(
-      "APPROVAL EMAIL ERROR:",
-      result
-    );
 
     throw new Error(
       result.error ||
@@ -858,11 +790,6 @@ async function updateBookingStatus(
 
     if (!response.ok) {
 
-      console.error(
-        "STATUS UPDATE ERROR:",
-        responseText
-      );
-
       throw new Error(
         responseText ||
         "Unable to update booking status."
@@ -871,19 +798,12 @@ async function updateBookingStatus(
     }
 
 
-    // --------------------------------
-    // BOOKING APPROVAL EMAIL ONLY
-    // --------------------------------
-
     if (
       newStatus === "Approved"
     ) {
 
       messageElement.textContent =
         "Booking approved. Sending customer email...";
-
-      messageElement.className =
-        "message";
 
 
       try {
@@ -909,7 +829,7 @@ async function updateBookingStatus(
         );
 
         messageElement.textContent =
-          "Booking approved, but the approval email could not be sent. Check the email function logs.";
+          "Booking approved, but the approval email could not be sent.";
 
         messageElement.className =
           "message error";
@@ -953,7 +873,7 @@ async function updateBookingStatus(
 
 
 // ==========================================
-// SAVE DEPOSIT AMOUNT
+// SAVE DEPOSIT
 // ==========================================
 
 async function saveDepositAmount(
@@ -969,12 +889,6 @@ async function saveDepositAmount(
 
 
   if (!token) {
-
-    messageElement.textContent =
-      "Your admin session has expired. Please log in again.";
-
-    messageElement.className =
-      "message error";
 
     showLogin();
 
@@ -1005,9 +919,6 @@ async function saveDepositAmount(
 
   messageElement.textContent =
     "Saving...";
-
-  messageElement.className =
-    "message";
 
 
   try {
@@ -1069,11 +980,6 @@ async function saveDepositAmount(
 
   catch(error) {
 
-    console.error(
-      "DEPOSIT ERROR:",
-      error
-    );
-
     messageElement.textContent =
       "Could not save deposit: " +
       error.message;
@@ -1104,9 +1010,6 @@ async function loadBookings() {
 
   if (!token) {
 
-    bookingsList.innerHTML =
-      "<p class='error'>Your admin session has expired. Please log in again.</p>";
-
     showLogin();
 
     return;
@@ -1120,8 +1023,6 @@ async function loadBookings() {
       await fetch(
         `${SUPABASE_URL}/rest/v1/Bookings?select=*&order=idd.desc`,
         {
-          method: "GET",
-
           headers: {
 
             "apikey":
@@ -1143,30 +1044,14 @@ async function loadBookings() {
       await response.text();
 
 
-    let bookings;
-
-
-    try {
-
-      bookings =
-        JSON.parse(responseText);
-
-    }
-
-    catch {
-
-      throw new Error(
-        "Supabase returned an unexpected response: " +
-        responseText
-      );
-
-    }
+    let bookings =
+      JSON.parse(responseText);
 
 
     if (!response.ok) {
 
       throw new Error(
-        JSON.stringify(bookings)
+        responseText
       );
 
     }
@@ -1191,7 +1076,8 @@ async function loadBookings() {
     }
 
 
-    bookingsList.innerHTML = "";
+    bookingsList.innerHTML =
+      "";
 
 
     bookings.forEach(
@@ -1199,6 +1085,7 @@ async function loadBookings() {
 
         const div =
           document.createElement("div");
+
 
         div.className =
           "booking";
@@ -1241,4 +1128,101 @@ async function loadBookings() {
           </p>
 
           <p>
-            <strong>
+            <strong>Booking reference:</strong>
+            ${booking["booking_reference"] || "Not available"}
+          </p>
+
+          <p>
+            <strong>Email:</strong>
+            ${booking["Email"] || ""}
+          </p>
+
+          <p>
+            <strong>Phone:</strong>
+            ${booking["Phone"] || ""}
+          </p>
+
+          <p>
+            <strong>Tattoo:</strong>
+            ${booking["Tattoo details"] || ""}
+          </p>
+
+          <p>
+            <strong>Type:</strong>
+            ${booking["Type"] || booking["type"] || "Not specified"}
+          </p>
+
+          <p>
+            <strong>Preferred date:</strong>
+            ${booking["preferred_date"] || "Not specified"}
+          </p>
+
+          <p>
+            <strong>Preferred time:</strong>
+            ${booking["preferred_time"] || "Not specified"}
+          </p>
+
+          <p>
+            <strong>Status:</strong>
+            <span class="status ${statusClass}">
+              ${currentStatus}
+            </span>
+          </p>
+
+          <div class="deposit-box">
+
+            <label>
+              Deposit amount (USD)
+            </label>
+
+            <input
+              type="number"
+              class="deposit-input"
+              min="0"
+              step="0.01"
+              placeholder="Enter deposit amount in USD"
+              value="${booking["deposit_amount"] || ""}"
+            >
+
+            <button
+              class="gold save-deposit"
+              type="button"
+            >
+              Save Deposit
+            </button>
+
+            <div
+              class="message deposit-message"
+            ></div>
+
+          </div>
+
+          <div class="action-box">
+
+            <button
+              class="approve approve-button"
+              type="button"
+            >
+              Approve Booking
+            </button>
+
+            <button
+              class="reject reject-button"
+              type="button"
+            >
+              Reject Booking
+            </button>
+
+          </div>
+
+          <div
+            class="message status-message"
+          ></div>
+
+        `;
+
+
+        const depositInput =
+          div.querySelector(
+            ".deposit-input"
+       
