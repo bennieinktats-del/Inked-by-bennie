@@ -369,5 +369,69 @@ document.addEventListener("DOMContentLoaded", function () {
     );
 
   }
+  /* =========================
+     LOAD FLASH DESIGNS
+  ========================= */
 
+  const flashDesignSelect =
+    document.querySelector('#flashFields select[name="design"]');
+
+  if (flashDesignSelect) {
+
+    async function loadFlashDesigns() {
+
+      try {
+
+        const response = await fetch(
+          "https://medadmstfuxqjnemjjqs.supabase.co/rest/v1/flash_designs?select=id,name,price,image_url&order=created_at.asc",
+          {
+            headers: {
+              "apikey": "sb_publishable_sPyYiyiKojy72MhKVCMvxQ_3I8gmUIO"
+            }
+          }
+        );
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error("Flash designs error:", errorText);
+          return;
+        }
+
+        const designs = await response.json();
+
+        flashDesignSelect.innerHTML =
+          '<option value="">Select a design</option>';
+
+        designs.forEach(function (design) {
+
+          const option =
+            document.createElement("option");
+
+          option.value = design.name;
+
+          option.textContent =
+            design.price
+              ? `${design.name} — $${design.price}`
+              : design.name;
+
+          flashDesignSelect.appendChild(option);
+
+        });
+
+      }
+
+      catch (error) {
+
+        console.error(
+          "Could not load flash designs:",
+          error
+        );
+
+      }
+
+    }
+
+    loadFlashDesigns();
+
+  }
 });
