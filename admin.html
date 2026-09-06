@@ -257,6 +257,14 @@ const SUPABASE_KEY =
   "sb_publishable_sPyYiyiKojy72MhKVCMvxQ_3I8gmUIO";
 
 
+// ==========================================
+// APPROVAL EMAIL EDGE FUNCTION
+// ==========================================
+
+const APPROVAL_EMAIL_FUNCTION_URL =
+  "https://medadmstfuxqjnemjjqs.supabase.co/functions/v1/enking-approval";
+
+
 /*
   ONLY THIS USER IS ALLOWED
   TO ACCESS THE ADMIN DASHBOARD.
@@ -352,12 +360,6 @@ loginForm.addEventListener(
       }
 
 
-      /*
-        SECURITY CHECK:
-        Make sure the logged-in account
-        is the designated admin account.
-      */
-
       if (
         !data.user ||
         data.user.id !== ADMIN_USER_ID
@@ -423,12 +425,93 @@ loginForm.addEventListener(
 );
 
 
+// ==========================================
+// SEND APPROVAL EMAIL
+// ==========================================
+
+async function sendApprovalEmail(booking) {
+
+  try {
+
+    const response =
+      await fetch(
+        APPROVAL_EMAIL_FUNCTION_URL,
+        {
+          method: "POST",
+
+          headers: {
+            "Content-Type": "application/json"
+          },
+
+          body: JSON.stringify({
+
+            client_name:
+              booking["Client name"] || "there",
+
+            email:
+              booking["Email"],
+
+            booking_reference:
+              booking["booking_reference"],
+
+            preferred_date:
+              booking["preferred_date"],
+
+            preferred_time:
+              booking["preferred_time"],
+
+            deposit_amount:
+              booking["deposit_amount"]
+
+          })
+
+        }
+      );
+
+
+    const result =
+      await response.json();
+
+
+    if (!response.ok) {
+
+      console.error(
+        "APPROVAL EMAIL ERROR:",
+        result
+      );
+
+      throw new Error(
+        result.error ||
+        "Approval email could not be sent."
+      );
+
+    }
+
+
+    return result;
+
+  }
+
+  catch(error) {
+
+    console.error(
+      "EMAIL FUNCTION ERROR:",
+      error
+    );
+
+    throw error;
+
+  }
+
+}
+
+
 // ===============================
 // UPDATE BOOKING STATUS
 // ===============================
 
 async function updateBookingStatus(
-  bookingId,
+  booking,
   newStatus,
   messageElement
 ) {
@@ -461,9 +544,13 @@ async function updateBookingStatus(
 
   try {
 
+    // --------------------------------
+    // UPDATE BOOKING STATUS
+    // --------------------------------
+
     const response =
       await fetch(
-        `${SUPABASE_URL}/rest/v1/Bookings?idd=eq.${encodeURIComponent(bookingId)}`,
+        `${SUPABASE_URL}/rest/v1/Bookings?idd=eq.${encodeURIComponent(booking.idd)}`,
         {
           method: "PATCH",
 
@@ -513,11 +600,62 @@ async function updateBookingStatus(
     }
 
 
-    messageElement.textContent =
-      `Booking marked as ${newStatus}.`;
+    // --------------------------------
+    // SEND APPROVAL EMAIL
+    // --------------------------------
 
-    messageElement.className =
-      "message success";
+    if (
+      newStatus === "Approved"
+    ) {
+
+      messageElement.textContent =
+        "Booking approved. Sending customer email...";
+
+      messageElement.className =
+        "message";
+
+
+      try {
+
+        await sendApprovalEmail(
+          booking
+        );
+
+
+        messageElement.textContent =
+          "Booking approved and approval email sent.";
+
+        messageElement.className =
+          "message success";
+
+      }
+
+      catch(emailError) {
+
+        console.error(
+          "EMAIL SEND ERROR:",
+          emailError
+        );
+
+        messageElement.textContent =
+          "Booking approved, but the approval email could not be sent. Check the email function logs.";
+
+        messageElement.className =
+          "message error";
+
+      }
+
+    }
+
+    else {
+
+      messageElement.textContent =
+        `Booking marked as ${newStatus}.`;
+
+      messageElement.className =
+        "message success";
+
+    }
 
 
     loadBookings();
@@ -1016,7 +1154,7 @@ async function loadBookings() {
 
             updateBookingStatus(
 
-              booking.idd,
+              booking,
 
               "Approved",
 
@@ -1034,7 +1172,7 @@ async function loadBookings() {
 
             updateBookingStatus(
 
-              booking.idd,
+              booking,
 
               "Rejected",
 
@@ -1131,17 +1269,3 @@ if (
 
   loginSection.classList.add(
     "hidden"
-  );
-
-  dashboardSection.classList.remove(
-    "hidden"
-  );
-
-  loadBookings();
-
-}
-
-</script>
-
-</body>
-        </html>
