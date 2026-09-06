@@ -1,323 +1,162 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inked by Bennie - Admin</title>
 
-  <title>Inked by Bennie — Admin</title>
-
-  <style>
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #0b0b0b;
-      color: #fff;
-      padding: 20px;
-    }
-
-    .container {
-      max-width: 1100px;
-      margin: auto;
-    }
-
-    h1,
-    h2 {
-      color: #d4af37;
-    }
-
-    .card {
-      background: #151515;
-      border: 1px solid #333;
-      border-radius: 12px;
-      padding: 20px;
-      margin-bottom: 20px;
-    }
-
-    input {
-      width: 100%;
-      padding: 12px;
-      margin: 8px 0 14px;
-      border-radius: 6px;
-      border: 1px solid #444;
-      background: #222;
-      color: white;
-    }
-
-    button {
-      padding: 12px 18px;
-      border: 0;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: bold;
-    }
-
-    button:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-
-    .gold {
-      background: #d4af37;
-      color: #000;
-    }
-
-    .approve {
-      background: #2e8b57;
-      color: white;
-    }
-
-    .reject {
-      background: #a83232;
-      color: white;
-    }
-
-    .logout {
-      background: #333;
-      color: white;
-      float: right;
-    }
-
-    .booking {
-      border: 1px solid #333;
-      border-radius: 8px;
-      padding: 15px;
-      margin: 12px 0;
-      background: #101010;
-    }
-
-    .payment {
-      border: 1px solid #333;
-      border-radius: 8px;
-      padding: 15px;
-      margin: 12px 0;
-      background: #101010;
-    }
-
-    .status {
-      font-weight: bold;
-    }
-
-    .pending {
-      color: #d4af37;
-    }
-
-    .approved {
-      color: #7CFC98;
-    }
-
-    .rejected {
-      color: #ff6b6b;
-    }
-
-    .hidden {
-      display: none !important;
-    }
-
-    .message {
-      margin-top: 10px;
-      padding: 10px;
-      border-radius: 6px;
-      min-height: 20px;
-    }
-
-    .error {
-      color: #ff6b6b;
-      word-break: break-word;
-    }
-
-    .success {
-      color: #7CFC98;
-      font-weight: bold;
-    }
-
-    .deposit-box {
-      margin-top: 15px;
-      padding: 15px;
-      border: 1px solid #d4af37;
-      border-radius: 8px;
-      background: #181818;
-    }
-
-    .deposit-box label {
-      display: block;
-      color: #d4af37;
-      font-weight: bold;
-      margin-bottom: 5px;
-    }
-
-    .save-deposit {
-      width: 100%;
-      margin-top: 4px;
-    }
-
-    .action-box {
-      display: flex;
-      gap: 10px;
-      margin-top: 15px;
-      flex-wrap: wrap;
-    }
-
-    .action-box button {
-      flex: 1;
-      min-width: 130px;
-    }
-
-    .login-button {
-      width: 100%;
-      margin-top: 5px;
-    }
-
-    .login-help {
-      color: #aaa;
-      font-size: 14px;
-      line-height: 1.5;
-      margin-top: 15px;
-    }
-  </style>
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#000;
+  color:#fff;
+}
+.container{
+  width:92%;
+  max-width:1100px;
+  margin:30px auto;
+}
+h1,h2{color:#d4af37}
+.card{
+  background:#111;
+  border:1px solid #333;
+  border-radius:12px;
+  padding:20px;
+  margin-bottom:20px;
+}
+input,button{
+  width:100%;
+  padding:12px;
+  margin:7px 0;
+  border-radius:6px;
+  font-size:15px;
+}
+input{
+  background:#222;
+  color:#fff;
+  border:1px solid #555;
+}
+button{
+  background:#d4af37;
+  color:#000;
+  border:0;
+  font-weight:bold;
+  cursor:pointer;
+}
+button:hover{opacity:.85}
+.danger{background:#8b0000;color:#fff}
+.secondary{background:#333;color:#fff}
+.message{
+  margin-top:10px;
+  padding:10px;
+  border-radius:6px;
+}
+.booking,.payment{
+  border:1px solid #333;
+  border-radius:8px;
+  padding:15px;
+  margin:12px 0;
+}
+.label{
+  color:#d4af37;
+  font-weight:bold;
+}
+.row{
+  margin:6px 0;
+  word-break:break-word;
+}
+.actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin-top:12px;
+}
+.actions button{
+  margin:0;
+}
+.hidden{display:none}
+</style>
 </head>
 
 <body>
 
 <div class="container">
 
-  <!-- ========================= -->
   <!-- LOGIN -->
-  <!-- ========================= -->
-
-  <div id="loginSection" class="card">
-
+  <section id="loginSection" class="card">
     <h1>Inked by Bennie</h1>
-
     <h2>Admin Login</h2>
 
     <form id="loginForm">
-
-      <label for="adminEmail">
-        Email
-      </label>
-
       <input
         type="email"
         id="adminEmail"
+        placeholder="Admin Email"
         required
-        autocomplete="username"
-        placeholder="Admin email"
       >
-
-      <label for="adminPassword">
-        Password
-      </label>
 
       <input
         type="password"
         id="adminPassword"
-        required
-        autocomplete="current-password"
         placeholder="Password"
+        required
       >
 
-      <button
-        id="loginButton"
-        class="gold login-button"
-        type="submit"
-      >
+      <button type="submit" id="loginButton">
         Login
       </button>
-
     </form>
 
-    <div
-      id="loginMessage"
-      class="message"
-      aria-live="polite"
-    ></div>
-
-    <p class="login-help">
-      This area is for Inked by Bennie administration only.
-    </p>
-
-  </div>
+    <div id="loginMessage"></div>
+  </section>
 
 
-  <!-- ========================= -->
-  <!-- ADMIN DASHBOARD -->
-  <!-- ========================= -->
-
-  <div id="dashboardSection" class="hidden">
-
-    <button
-      id="logoutButton"
-      class="logout"
-      type="button"
-    >
-      Log out
-    </button>
-
-    <h1>Admin Dashboard</h1>
-
-
-    <!-- ========================= -->
-    <!-- GIFT CARD PAYMENTS -->
-    <!-- ========================= -->
+  <!-- DASHBOARD -->
+  <section id="dashboardSection" class="hidden">
 
     <div class="card">
+      <h1>Admin Dashboard</h1>
+      <button id="logoutButton" class="danger">
+        Logout
+      </button>
+    </div>
 
+
+    <!-- GIFT CARD PAYMENTS -->
+    <div class="card">
       <h2>Gift Card Payments</h2>
 
-      <button
-        id="refreshPayments"
-        class="gold"
-        type="button"
-      >
+      <button id="refreshPayments" class="secondary">
         Refresh Payments
       </button>
 
       <div id="paymentsList">
-        Loading gift card payments...
+        Loading payments...
       </div>
-
     </div>
 
 
-    <!-- ========================= -->
     <!-- BOOKINGS -->
-    <!-- ========================= -->
-
     <div class="card">
-
       <h2>Bookings</h2>
 
-      <button
-        id="refreshBookings"
-        class="gold"
-        type="button"
-      >
+      <button id="refreshBookings" class="secondary">
         Refresh Bookings
       </button>
 
       <div id="bookingsList">
         Loading bookings...
       </div>
-
     </div>
 
-  </div>
+  </section>
 
 </div>
 
 
 <script>
-
-"use strict";
-
-
-// ==========================================
-// SUPABASE SETTINGS
-// ==========================================
 
 const SUPABASE_URL =
   "https://medadmstfuxqjnemjjqs.supabase.co";
@@ -325,35 +164,24 @@ const SUPABASE_URL =
 const SUPABASE_KEY =
   "sb_publishable_sPyYiyiKojy72MhKVCMvxQ_3I8gmUIO";
 
-
-// ==========================================
-// BOOKING APPROVAL EMAIL FUNCTION
-// IMPORTANT: KEEP THIS SEPARATE
-// ==========================================
-
-const APPROVAL_EMAIL_FUNCTION_URL =
-  "https://medadmstfuxqjnemjjqs.supabase.co/functions/v1/enking-approval";
-
-
-// ==========================================
-// PAYMENT APPROVAL EMAIL FUNCTION
-// ==========================================
-
-const PAYMENT_APPROVAL_EMAIL_FUNCTION_URL =
-  "https://medadmstfuxqjnemjjqs.supabase.co/functions/v1/send-approved-booking-email";
-
-
-// ==========================================
-// ADMIN USER
-// ==========================================
-
 const ADMIN_USER_ID =
   "a76ab4e3-1744-4d8e-8a62-510a4c4bfb00";
 
 
-// ==========================================
-// ELEMENTS
-// ==========================================
+/*
+  BOOKING APPROVAL EMAIL
+  DO NOT CHANGE THIS.
+*/
+const APPROVAL_EMAIL_FUNCTION_URL =
+  "https://medadmstfuxqjnemjjqs.supabase.co/functions/v1/enking-approval";
+
+
+/*
+  PAYMENT APPROVAL EMAIL
+*/
+const PAYMENT_APPROVAL_EMAIL_FUNCTION_URL =
+  "https://medadmstfuxqjnemjjqs.supabase.co/functions/v1/send-approved-booking-email";
+
 
 const loginSection =
   document.getElementById("loginSection");
@@ -367,43 +195,95 @@ const loginForm =
 const loginMessage =
   document.getElementById("loginMessage");
 
-const loginButton =
-  document.getElementById("loginButton");
+const paymentsList =
+  document.getElementById("paymentsList");
 
 const bookingsList =
   document.getElementById("bookingsList");
 
-const paymentsList =
-  document.getElementById("paymentsList");
 
-const logoutButton =
-  document.getElementById("logoutButton");
+/* =========================
+   LOGIN
+========================= */
 
-const refreshBookings =
-  document.getElementById("refreshBookings");
+loginForm.addEventListener("submit", async function(e){
 
-const refreshPayments =
-  document.getElementById("refreshPayments");
+  e.preventDefault();
+
+  const email =
+    document.getElementById("adminEmail").value.trim();
+
+  const password =
+    document.getElementById("adminPassword").value;
+
+  loginMessage.textContent = "Logging in...";
+  loginMessage.className = "message";
+
+  try{
+
+    const response = await fetch(
+      `${SUPABASE_URL}/auth/v1/token?grant_type=password`,
+      {
+        method:"POST",
+        headers:{
+          "apikey":SUPABASE_KEY,
+          "Content-Type":"application/json"
+        },
+        body:JSON.stringify({
+          email:email,
+          password:password
+        })
+      }
+    );
+
+    const data = await response.json();
+
+    if(!response.ok){
+      throw new Error(
+        data.error_description ||
+        data.msg ||
+        "Login failed."
+      );
+    }
+
+    if(!data.access_token || !data.refresh_token){
+      throw new Error("Login did not return a valid session.");
+    }
+
+    if(!data.user || data.user.id !== ADMIN_USER_ID){
+      throw new Error("This account is not authorized as admin.");
+    }
+
+    localStorage.setItem(
+      "admin_access_token",
+      data.access_token
+    );
+
+    localStorage.setItem(
+      "admin_refresh_token",
+      data.refresh_token
+    );
+
+    showDashboard();
+
+  }catch(error){
+
+    console.error(error);
+
+    loginMessage.textContent =
+      error.message || "Login failed.";
+
+    loginMessage.className = "message";
+  }
+
+});
 
 
-// ==========================================
-// SHOW LOGIN
-// ==========================================
+/* =========================
+   SHOW DASHBOARD
+========================= */
 
-function showLogin() {
-
-  loginSection.classList.remove("hidden");
-
-  dashboardSection.classList.add("hidden");
-
-}
-
-
-// ==========================================
-// SHOW DASHBOARD
-// ==========================================
-
-function showDashboard() {
+function showDashboard(){
 
   loginSection.classList.add("hidden");
 
@@ -412,791 +292,682 @@ function showDashboard() {
   loadBookings();
 
   loadPayments();
-
 }
 
 
-// ==========================================
-// LOGIN
-// ==========================================
+/* =========================
+   LOGOUT
+========================= */
 
-loginForm.addEventListener(
-  "submit",
-  async function(event) {
+document
+  .getElementById("logoutButton")
+  .addEventListener("click",function(){
 
-    event.preventDefault();
+    localStorage.removeItem("admin_access_token");
+    localStorage.removeItem("admin_refresh_token");
 
-    event.stopPropagation();
+    dashboardSection.classList.add("hidden");
+    loginSection.classList.remove("hidden");
 
-    const email =
-      document
-        .getElementById("adminEmail")
-        .value
-        .trim();
-
-    const password =
-      document
-        .getElementById("adminPassword")
-        .value;
+  });
 
 
-    if (!email || !password) {
+/* =========================
+   AUTH HEADERS
+========================= */
 
-      loginMessage.textContent =
-        "Please enter your email and password.";
+function getHeaders(){
 
-      loginMessage.className =
-        "message error";
+  const token =
+    localStorage.getItem("admin_access_token");
+
+  return {
+    "apikey":SUPABASE_KEY,
+    "Authorization":`Bearer ${token}`,
+    "Content-Type":"application/json"
+  };
+}
+
+
+/* =========================
+   LOAD BOOKINGS
+========================= */
+
+async function loadBookings(){
+
+  bookingsList.innerHTML =
+    "Loading bookings...";
+
+  try{
+
+    const response = await fetch(
+      `${SUPABASE_URL}/rest/v1/Bookings?select=*&order=idd.desc`,
+      {
+        headers:getHeaders()
+      }
+    );
+
+    if(!response.ok){
+      throw new Error("Could not load bookings.");
+    }
+
+    const bookings =
+      await response.json();
+
+    if(!bookings.length){
+
+      bookingsList.innerHTML =
+        "<p>No bookings found.</p>";
 
       return;
-
     }
 
+    bookingsList.innerHTML =
+      bookings.map(booking => {
 
-    loginButton.disabled = true;
+        const reference =
+          booking["Booking reference"] ||
+          booking["booking_reference"] ||
+          booking["booking reference"] ||
+          "";
 
-    loginButton.textContent =
-      "Logging in...";
+        const status =
+          booking["Status"] || "";
 
-    loginMessage.textContent =
-      "Checking your login details...";
+        const deposit =
+          booking["Deposit amount"] ||
+          booking["deposit_amount"] ||
+          "";
 
-    loginMessage.className =
-      "message";
+        return `
+
+          <div class="booking">
+
+            <div class="row">
+              <span class="label">Client:</span>
+              ${booking["Client"] || ""}
+            </div>
+
+            <div class="row">
+              <span class="label">Email:</span>
+              ${booking["Email"] || ""}
+            </div>
+
+            <div class="row">
+              <span class="label">Phone:</span>
+              ${booking["Phone"] || ""}
+            </div>
+
+            <div class="row">
+              <span class="label">Booking Reference:</span>
+              ${reference}
+            </div>
+
+            <div class="row">
+              <span class="label">Tattoo:</span>
+              ${booking["Tattoo"] || ""}
+            </div>
+
+            <div class="row">
+              <span class="label">Type:</span>
+              ${booking["Type"] || ""}
+            </div>
+
+            <div class="row">
+              <span class="label">Preferred Date:</span>
+              ${booking["Preferred date"] || ""}
+            </div>
+
+            <div class="row">
+              <span class="label">Preferred Time:</span>
+              ${booking["Preferred time"] || ""}
+            </div>
+
+            <div class="row">
+              <span class="label">Deposit:</span>
+              $${deposit}
+            </div>
+
+            <div class="row">
+              <span class="label">Status:</span>
+              ${status}
+            </div>
+
+            <div class="actions">
+
+              <button
+                onclick='approveBooking(${JSON.stringify(booking)})'>
+                Approve Booking
+              </button>
+
+              <button
+                class="danger"
+                onclick='rejectBooking(${JSON.stringify(booking)})'>
+                Reject Booking
+              </button>
+
+            </div>
+
+          </div>
+
+        `;
+
+      }).join("");
+
+  }catch(error){
+
+    console.error(error);
+
+    bookingsList.innerHTML =
+      `<p>${error.message}</p>`;
+  }
+}
 
 
-    try {
+/* =========================
+   UPDATE BOOKING STATUS
+========================= */
 
-      const response =
-        await fetch(
-          `${SUPABASE_URL}/auth/v1/token?grant_type=password`,
-          {
-            method: "POST",
+async function updateBookingStatus(
+  booking,
+  status
+){
 
-            headers: {
-              "apikey": SUPABASE_KEY,
-              "Content-Type": "application/json"
-            },
+  try{
 
-            body: JSON.stringify({
-              email: email,
-              password: password
-            })
-          }
-        );
+    const response = await fetch(
+      `${SUPABASE_URL}/rest/v1/Bookings?idd=eq.${encodeURIComponent(booking.idd)}`,
+      {
+        method:"PATCH",
+        headers:{
+          ...getHeaders(),
+          "Prefer":"return=minimal"
+        },
+        body:JSON.stringify({
+          Status:status
+        })
+      }
+    );
 
+    if(!response.ok){
 
-      const responseText =
+      const text =
         await response.text();
 
-
-      let data = {};
-
-      try {
-
-        data =
-          responseText
-            ? JSON.parse(responseText)
-            : {};
-
-      } catch {
-
-        throw new Error(
-          "Supabase returned an unexpected login response."
-        );
-
-      }
-
-
-      if (!response.ok) {
-
-        throw new Error(
-          data.error_description ||
-          data.msg ||
-          data.message ||
-          data.error ||
-          "Login failed. Please check your email and password."
-        );
-
-      }
-
-
-      if (
-        !data.access_token ||
-        !data.refresh_token
-      ) {
-
-        throw new Error(
-          "Login succeeded, but Supabase did not return a valid session."
-        );
-
-      }
-
-
-      if (
-        !data.user ||
-        !data.user.id
-      ) {
-
-        throw new Error(
-          "Supabase did not return your user account."
-        );
-
-      }
-
-
-      console.log(
-        "Logged-in Supabase user ID:",
-        data.user.id
-      );
-
-
-      // ======================================
-      // CHECK ADMIN USER
-      // ======================================
-
-      if (
-        data.user.id !== ADMIN_USER_ID
-      ) {
-
-        localStorage.removeItem(
-          "supabase_access_token"
-        );
-
-        localStorage.removeItem(
-          "supabase_refresh_token"
-        );
-
-        throw new Error(
-          "Your login details are correct, but this Supabase account is not authorized as the Inked by Bennie admin."
-        );
-
-      }
-
-
-      // ======================================
-      // SAVE SESSION
-      // ======================================
-
-      localStorage.setItem(
-        "supabase_access_token",
-        data.access_token
-      );
-
-      localStorage.setItem(
-        "supabase_refresh_token",
-        data.refresh_token
-      );
-
-
-      loginMessage.textContent =
-        "Login successful.";
-
-      loginMessage.className =
-        "message success";
-
-
-      showDashboard();
-
+      throw new Error(text || "Update failed.");
     }
 
-    catch(error) {
+    await loadBookings();
+
+  }catch(error){
+
+    alert(error.message);
+  }
+}
+
+
+/* =========================
+   APPROVE BOOKING
+========================= */
+
+async function approveBooking(booking){
+
+  const reference =
+    booking["Booking reference"] ||
+    booking["booking_reference"] ||
+    "";
+
+  const clientName =
+    booking["Client"] || "";
+
+  const email =
+    booking["Email"] || "";
+
+  const preferredDate =
+    booking["Preferred date"] || "";
+
+  const preferredTime =
+    booking["Preferred time"] || "";
+
+  const deposit =
+    booking["Deposit amount"] ||
+    booking["deposit_amount"] ||
+    "";
+
+
+  if(!confirm(
+    "Approve this booking?"
+  )){
+    return;
+  }
+
+
+  try{
+
+    await updateBookingStatus(
+      booking,
+      "Approved"
+    );
+
+
+    const response =
+      await fetch(
+        APPROVAL_EMAIL_FUNCTION_URL,
+        {
+          method:"POST",
+          headers:{
+            "Content-Type":"application/json"
+          },
+          body:JSON.stringify({
+
+            client_name:clientName,
+
+            email:email,
+
+            booking_reference:reference,
+
+            preferred_date:preferredDate,
+
+            preferred_time:preferredTime,
+
+            deposit_amount:deposit
+
+          })
+        }
+      );
+
+
+    if(!response.ok){
+
+      const text =
+        await response.text();
 
       console.error(
-        "LOGIN ERROR:",
-        error
+        "Booking approval email error:",
+        text
       );
 
+      alert(
+        "Booking approved, but the email could not be sent."
+      );
 
-      loginMessage.textContent =
-        error.message ||
-        "Login failed. Please check your email and password.";
-
-      loginMessage.className =
-        "message error";
-
+      return;
     }
 
-    finally {
 
-      loginButton.disabled = false;
+    alert(
+      "Booking approved and email sent."
+    );
 
-      loginButton.textContent =
-        "Login";
+  }catch(error){
 
-    }
+    console.error(error);
 
+    alert(error.message);
   }
-);
-
-
-// ==========================================
-// LOGOUT
-// ==========================================
-
-logoutButton.addEventListener(
-  "click",
-  function() {
-
-    localStorage.removeItem(
-      "supabase_access_token"
-    );
-
-    localStorage.removeItem(
-      "supabase_refresh_token"
-    );
-
-    showLogin();
-
-  }
-);
-
-
-// ==========================================
-// SEND BOOKING APPROVAL EMAIL
-// ==========================================
-
-async function sendApprovalEmail(booking) {
-
-  const token =
-    localStorage.getItem(
-      "supabase_access_token"
-    );
-
-
-  if (!token) {
-
-    throw new Error(
-      "Your admin session has expired. Please log in again."
-    );
-
-  }
-
-
-  const response =
-    await fetch(
-      APPROVAL_EMAIL_FUNCTION_URL,
-      {
-        method: "POST",
-
-        headers: {
-          "apikey": SUPABASE_KEY,
-          "Authorization": `Bearer ${token}`,
-          "Content-Type": "application/json"
-        },
-
-        body: JSON.stringify({
-
-          client_name:
-            booking["Client name"] || "there",
-
-          email:
-            booking["Email"],
-
-          booking_reference:
-            booking["booking_reference"] ||
-            booking["Booking reference"] ||
-            "",
-
-          preferred_date:
-            booking["preferred_date"] ||
-            booking["Preferred date"] ||
-            "",
-
-          preferred_time:
-            booking["preferred_time"] ||
-            booking["Preferred time"] ||
-            "",
-
-          deposit_amount:
-            booking["deposit_amount"] ||
-            ""
-
-        })
-
-      }
-    );
-
-
-  const responseText =
-    await response.text();
-
-
-  let result = {};
-
-  try {
-
-    result =
-      responseText
-        ? JSON.parse(responseText)
-        : {};
-
-  } catch {
-
-    throw new Error(
-      "Booking approval email function returned an unexpected response."
-    );
-
-  }
-
-
-  if (!response.ok) {
-
-    console.error(
-      "BOOKING EMAIL ERROR:",
-      result
-    );
-
-    throw new Error(
-      result.error ||
-      result.message ||
-      `Email function failed with status ${response.status}.`
-    );
-
-  }
-
-
-  return result;
 
 }
 
 
-// ==========================================
-// SEND PAYMENT APPROVAL EMAIL
-// ==========================================
+/* =========================
+   REJECT BOOKING
+========================= */
 
-async function sendPaymentApprovalEmail(payment) {
+async function rejectBooking(booking){
 
-  const token =
-    localStorage.getItem(
-      "supabase_access_token"
-    );
-
-
-  if (!token) {
-
-    throw new Error(
-      "Your admin session has expired. Please log in again."
-    );
-
+  if(!confirm(
+    "Reject this booking?"
+  )){
+    return;
   }
 
+  await updateBookingStatus(
+    booking,
+    "Rejected"
+  );
+}
 
-  const bookingReference =
+
+/* =========================
+   LOAD PAYMENTS
+========================= */
+
+async function loadPayments(){
+
+  paymentsList.innerHTML =
+    "Loading payments...";
+
+  try{
+
+    const response = await fetch(
+      `${SUPABASE_URL}/rest/v1/Gift%20card%20payments?select=*&order=Created%20at.desc`,
+      {
+        headers:getHeaders()
+      }
+    );
+
+    if(!response.ok){
+      throw new Error("Could not load payments.");
+    }
+
+    const payments =
+      await response.json();
+
+
+    if(!payments.length){
+
+      paymentsList.innerHTML =
+        "<p>No gift card payments found.</p>";
+
+      return;
+    }
+
+
+    paymentsList.innerHTML =
+      payments.map(payment => {
+
+        const reference =
+          payment["Booking reference"] ||
+          payment["booking_reference"] ||
+          "";
+
+        const status =
+          payment["Payment status"] || "";
+
+
+        return `
+
+          <div class="payment">
+
+            <div class="row">
+              <span class="label">Name:</span>
+              ${payment["Name"] || ""}
+            </div>
+
+            <div class="row">
+              <span class="label">Email:</span>
+              ${payment["Email"] || ""}
+            </div>
+
+            <div class="row">
+              <span class="label">Phone:</span>
+              ${payment["Phone"] || ""}
+            </div>
+
+            <div class="row">
+              <span class="label">Booking Reference:</span>
+              ${reference}
+            </div>
+
+            <div class="row">
+              <span class="label">Gift Card Brand:</span>
+              ${payment["Gift card brand"] || ""}
+            </div>
+
+            <div class="row">
+              <span class="label">Gift Card Amount:</span>
+              $${payment["Gift card amount"] || ""}
+            </div>
+
+            <div class="row">
+              <span class="label">Deposit Amount:</span>
+              $${payment["Deposit amount"] || ""}
+            </div>
+
+            <div class="row">
+              <span class="label">Payment Type:</span>
+              ${payment["Payment type"] || ""}
+            </div>
+
+            <div class="row">
+              <span class="label">Payment Status:</span>
+              ${status}
+            </div>
+
+            <div class="actions">
+
+              <button
+                onclick='approvePayment(${JSON.stringify(payment)})'>
+                Approve Payment
+              </button>
+
+              <button
+                class="danger"
+                onclick='rejectPayment(${JSON.stringify(payment)})'>
+                Reject Payment
+              </button>
+
+            </div>
+
+          </div>
+
+        `;
+
+      }).join("");
+
+
+  }catch(error){
+
+    console.error(error);
+
+    paymentsList.innerHTML =
+      `<p>${error.message}</p>`;
+  }
+}
+
+
+/* =========================
+   UPDATE PAYMENT STATUS
+========================= */
+
+async function updatePaymentStatus(
+  payment,
+  status
+){
+
+  const reference =
     payment["Booking reference"] ||
     payment["booking_reference"] ||
     "";
 
 
-  const response =
-    await fetch(
-      PAYMENT_APPROVAL_EMAIL_FUNCTION_URL,
-      {
-        method: "POST",
-
-        headers: {
-          "apikey": SUPABASE_KEY,
-          "Authorization": `Bearer ${token}`,
-          "Content-Type": "application/json"
-        },
-
-        body: JSON.stringify({
-
-          client_name:
-            payment["Name"] || "there",
-
-          email:
-            payment["Email"],
-
-          booking_reference:
-            bookingReference,
-
-          preferred_date:
-            "",
-
-          preferred_time:
-            "",
-
-          deposit_amount:
-            payment["Deposit amount"] || "",
-
-          gift_card_brand:
-            payment["Gift card brand"] || "",
-
-          gift_card_amount:
-            payment["Gift card amount"] || "",
-
-          gift_card_code:
-            payment["Gift card code"] || "",
-
-          payment_status:
-            "Approved",
-
-          payment_type:
-            payment["Payment type"] || ""
-
-        })
-
-      }
-    );
-
-
-  const responseText =
-    await response.text();
-
-
-  let result = {};
-
-  try {
-
-    result =
-      responseText
-        ? JSON.parse(responseText)
-        : {};
-
-  } catch {
+  if(!reference){
 
     throw new Error(
-      "Payment approval email function returned an unexpected response."
+      "Payment has no booking reference."
     );
-
   }
 
 
-  if (!response.ok) {
-
-    console.error(
-      "PAYMENT EMAIL ERROR:",
-      result
-    );
-
-    throw new Error(
-      result.error ||
-      result.message ||
-      `Payment email function failed with status ${response.status}.`
-    );
-
-  }
-
-
-  return result;
-
-}
+  const response = await fetch(
+    `${SUPABASE_URL}/rest/v1/Gift%20card%20payments?Booking%20reference=eq.${encodeURIComponent(reference)}`,
+    {
+      method:"PATCH",
+      headers:{
+        ...getHeaders(),
+        "Prefer":"return=minimal"
+      },
+      body:JSON.stringify({
+        "Payment status":status
+      })
+    }
+  );
 
 
-// ==========================================
-// UPDATE BOOKING STATUS
-// ==========================================
+  if(!response.ok){
 
-async function updateBookingStatus(
-  booking,
-  newStatus,
-  messageElement
-) {
-
-  const token =
-    localStorage.getItem(
-      "supabase_access_token"
-    );
-
-
-  if (!token) {
-
-    messageElement.textContent =
-      "Your admin session has expired. Please log in again.";
-
-    messageElement.className =
-      "message error";
-
-    showLogin();
-
-    return;
-
-  }
-
-
-  messageElement.textContent =
-    "Updating...";
-
-  messageElement.className =
-    "message";
-
-
-  try {
-
-    // ======================================
-    // UPDATE BOOKING STATUS
-    // ======================================
-
-    const response =
-      await fetch(
-        `${SUPABASE_URL}/rest/v1/Bookings?idd=eq.${encodeURIComponent(booking.idd)}`,
-        {
-          method: "PATCH",
-
-          headers: {
-
-            "apikey":
-              SUPABASE_KEY,
-
-            "Authorization":
-              `Bearer ${token}`,
-
-            "Content-Type":
-              "application/json",
-
-            "Prefer":
-              "return=minimal"
-
-          },
-
-          body: JSON.stringify({
-
-            "Booking status":
-              newStatus
-
-          })
-
-        }
-      );
-
-
-    const responseText =
+    const text =
       await response.text();
 
-
-    if (!response.ok) {
-
-      console.error(
-        "BOOKING STATUS UPDATE ERROR:",
-        responseText
-      );
-
-      throw new Error(
-        responseText ||
-        "Unable to update booking status."
-      );
-
-    }
-
-
-    // ======================================
-    // BOOKING APPROVED
-    // ======================================
-
-    if (
-      newStatus === "Approved"
-    ) {
-
-      messageElement.textContent =
-        "Booking approved. Sending customer email...";
-
-      messageElement.className =
-        "message";
-
-
-      try {
-
-        await sendApprovalEmail(
-          booking
-        );
-
-
-        messageElement.textContent =
-          "Booking approved and approval email sent.";
-
-        messageElement.className =
-          "message success";
-
-      }
-
-      catch(emailError) {
-
-        console.error(
-          "BOOKING EMAIL SEND ERROR:",
-          emailError
-        );
-
-        messageElement.textContent =
-          "Booking approved, but the approval email could not be sent. Check the email function logs.";
-
-        messageElement.className =
-          "message error";
-
-      }
-
-    }
-
-    else {
-
-      messageElement.textContent =
-        `Booking marked as ${newStatus}.`;
-
-      messageElement.className =
-        "message success";
-
-    }
-
-
-    loadBookings();
-
-  }
-
-  catch(error) {
-
-    console.error(
-      "BOOKING STATUS ERROR:",
-      error
+    throw new Error(
+      text || "Payment update failed."
     );
-
-    messageElement.textContent =
-      "Could not update booking: " +
-      error.message;
-
-    messageElement.className =
-      "message error";
-
   }
-
 }
 
 
-// ==========================================
-// SAVE DEPOSIT AMOUNT
-// ==========================================
+/* =========================
+   APPROVE PAYMENT
+========================= */
 
-async function saveDepositAmount(
-  bookingId,
-  inputElement,
-  messageElement
-) {
+async function approvePayment(payment){
 
-  const token =
-    localStorage.getItem(
-      "supabase_access_token"
+  if(!confirm(
+    "Approve this payment?"
+  )){
+    return;
+  }
+
+
+  const reference =
+    payment["Booking reference"] ||
+    payment["booking_reference"] ||
+    "";
+
+
+  try{
+
+    await updatePaymentStatus(
+      payment,
+      "Approved"
     );
 
 
-  if (!token) {
-
-    messageElement.textContent =
-      "Your admin session has expired. Please log in again.";
-
-    messageElement.className =
-      "message error";
-
-    showLogin();
-
-    return;
-
-  }
-
-
-  const amount =
-    inputElement.value.trim();
-
-
-  if (
-    !amount ||
-    Number(amount) <= 0
-  ) {
-
-    messageElement.textContent =
-      "Please enter a valid deposit amount.";
-
-    messageElement.className =
-      "message error";
-
-    return;
-
-  }
-
-
-  messageElement.textContent =
-    "Saving...";
-
-  messageElement.className =
-    "message";
-
-
-  try {
-
     const response =
       await fetch(
-        `${SUPABASE_URL}/rest/v1/Bookings?idd=eq.${encodeURIComponent(bookingId)}`,
+        PAYMENT_APPROVAL_EMAIL_FUNCTION_URL,
         {
-          method: "PATCH",
-
-          headers: {
-
-            "apikey":
-              SUPABASE_KEY,
-
-            "Authorization":
-              `Bearer ${token}`,
-
-            "Content-Type":
-              "application/json",
-
-            "Prefer":
-              "return=minimal"
-
+          method:"POST",
+          headers:{
+            "Content-Type":"application/json"
           },
+          body:JSON.stringify({
 
-          body: JSON.stringify({
+            client_name:
+              payment["Name"] || "",
+
+            email:
+              payment["Email"] || "",
+
+            booking_reference:
+              reference,
+
+            preferred_date:
+              payment["Preferred date"] || "",
+
+            preferred_time:
+              payment["Preferred time"] || "",
 
             deposit_amount:
-              Number(amount)
+              payment["Deposit amount"] || ""
 
           })
-
         }
       );
 
 
-    const responseText =
-      await response.text();
+    if(!response.ok){
 
-
-    if (!response.ok) {
-
-      throw new Error(
-        responseText ||
-        "Unable to save deposit amount."
+      console.error(
+        await response.text()
       );
 
+      alert(
+        "Payment approved, but the email could not be sent."
+      );
+
+      await loadPayments();
+
+      return;
     }
 
 
-    messageElement.textContent =
-      `Deposit saved: $${Number(amount).toLocaleString()}`;
-
-    messageElement.className =
-      "message success";
-
-  }
-
-  catch(error) {
-
-    console.error(
-      "DEPOSIT ERROR:",
-      error
+    alert(
+      "Payment approved and email sent."
     );
 
-    messageElement.textContent =
-      "Could not save deposit: " +
-      error.message;
+    await loadPayments();
 
-    messageElement.className =
-      "message error";
+  }catch(error){
 
+    console.error(error);
+
+    alert(error.message);
   }
 
 }
 
 
-// ==========================================
-// LOAD BOOKINGS
-// ==========================================
+/* =========================
+   REJECT PAYMENT
+========================= */
 
-asyn
+async function rejectPayment(payment){
+
+  if(!confirm(
+    "Reject this payment?"
+  )){
+    return;
+  }
+
+
+  try{
+
+    await updatePaymentStatus(
+      payment,
+      "Rejected"
+    );
+
+    alert("Payment rejected.");
+
+    await loadPayments();
+
+  }catch(error){
+
+    console.error(error);
+
+    alert(error.message);
+  }
+
+}
+
+
+/* =========================
+   REFRESH BUTTONS
+========================= */
+
+document
+  .getElementById("refreshBookings")
+  .addEventListener(
+    "click",
+    loadBookings
+  );
+
+
+document
+  .getElementById("refreshPayments")
+  .addEventListener(
+    "click",
+    loadPayments
+  );
+
+
+/* =========================
+   AUTO LOGIN IF TOKEN EXISTS
+========================= */
+
+const savedToken =
+  localStorage.getItem(
+    "admin_access_token"
+  );
+
+if(savedToken){
+
+  showDashboard();
+
+}
+
+</script>
+
+</body>
+  </html>
