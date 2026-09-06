@@ -163,7 +163,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
           const response =
             await fetch(
-              BOOKING_FUNCTION_URL,
+  "https://medadmstfuxqjnemjjqs.supabase.co/functions/v1/submit-gift-card",
               {
 
                 method: "POST",
