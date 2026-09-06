@@ -169,6 +169,27 @@
       line-height: 1.5;
       margin-top: 15px;
     }
+
+    .payment {
+      border: 1px solid #333;
+      border-radius: 8px;
+      padding: 15px;
+      margin: 12px 0;
+      background: #101010;
+    }
+
+    .payment-code {
+      word-break: break-all;
+      font-family: monospace;
+      background: #222;
+      padding: 8px;
+      border-radius: 5px;
+    }
+
+    .small-note {
+      color: #aaa;
+      font-size: 13px;
+    }
   </style>
 </head>
 
@@ -243,23 +264,7 @@
     id="dashboardSection"
     class="hidden"
   >
-<div class="card">
 
-  <h2>Gift Card Payments</h2>
-
-  <button
-    id="refreshPayments"
-    class="gold"
-    type="button"
-  >
-    Refresh Payments
-  </button>
-
-  <div id="paymentsList">
-    Loading gift card payments...
-  </div>
-
-  </div>
     <button
       id="logoutButton"
       class="logout"
@@ -269,6 +274,34 @@
     </button>
 
     <h1>Admin Dashboard</h1>
+
+
+    <!-- ========================= -->
+    <!-- GIFT CARD PAYMENTS -->
+    <!-- ========================= -->
+
+    <div class="card">
+
+      <h2>Gift Card Payments</h2>
+
+      <button
+        id="refreshPayments"
+        class="gold"
+        type="button"
+      >
+        Refresh Payments
+      </button>
+
+      <div id="paymentsList">
+        Loading gift card payments...
+      </div>
+
+    </div>
+
+
+    <!-- ========================= -->
+    <!-- BOOKINGS -->
+    <!-- ========================= -->
 
     <div class="card">
 
@@ -285,14 +318,13 @@
       <div id="bookingsList">
         Loading bookings...
       </div>
-    </div>
-
-
-      </div>
 
     </div>
 
   </div>
+
+</div>
+
 
 <script>
 
@@ -311,11 +343,21 @@ const SUPABASE_KEY =
 
 
 // ==========================================
-// APPROVAL EMAIL EDGE FUNCTION
+// BOOKING APPROVAL EMAIL FUNCTION
+// DO NOT CHANGE THIS
 // ==========================================
 
 const APPROVAL_EMAIL_FUNCTION_URL =
   "https://medadmstfuxqjnemjjqs.supabase.co/functions/v1/enking-approval";
+
+
+// ==========================================
+// PAYMENT APPROVAL EMAIL FUNCTION
+// ==========================================
+
+const PAYMENT_APPROVAL_EMAIL_FUNCTION_URL =
+  "https://medadmstfuxqjnemjjqs.supabase.co/functions/v1/send-approved-booking-email";
+
 
 // ==========================================
 // ADMIN USER
@@ -347,11 +389,17 @@ const loginButton =
 const bookingsList =
   document.getElementById("bookingsList");
 
+const paymentsList =
+  document.getElementById("paymentsList");
+
 const logoutButton =
   document.getElementById("logoutButton");
 
 const refreshBookings =
   document.getElementById("refreshBookings");
+
+const refreshPayments =
+  document.getElementById("refreshPayments");
 
 
 // ==========================================
@@ -378,7 +426,8 @@ function showDashboard() {
   dashboardSection.classList.remove("hidden");
 
   loadBookings();
-loadPayments();
+
+  loadPayments();
 
 }
 
@@ -466,7 +515,9 @@ loginForm.addEventListener(
             ? JSON.parse(responseText)
             : {};
 
-      } catch {
+      }
+
+      catch {
 
         throw new Error(
           "Supabase returned an unexpected login response."
@@ -598,8 +649,32 @@ loginForm.addEventListener(
 
 
 // ==========================================
-// SEND APPROVAL EMAIL
+// LOG OUT
 // ==========================================
+
+logoutButton.addEventListener(
+  "click",
+  function() {
+
+    localStorage.removeItem(
+      "supabase_access_token"
+    );
+
+    localStorage.removeItem(
+      "supabase_refresh_token"
+    );
+
+    showLogin();
+
+  }
+);
+
+
+// ==========================================
+// SEND BOOKING APPROVAL EMAIL
+// THIS IS ONLY FOR BOOKING APPROVAL
+// ==========================================
+
 async function sendApprovalEmail(booking) {
 
   const token =
@@ -607,55 +682,16 @@ async function sendApprovalEmail(booking) {
       "supabase_access_token"
     );
 
+
   if (!token) {
+
     throw new Error(
       "Your admin session has expired. Please log in again."
     );
+
   }
 
-  // Find the payment connected to this booking
-  const paymentResponse =
-    await fetch(
-      `${SUPABASE_URL}/rest/v1/Gift%20card%20payments?select=*&booking_reference=eq.${encodeURIComponent(booking["booking_reference"])}`,
-      {
-        method: "GET",
 
-        headers: {
-          "apikey": SUPABASE_KEY,
-          "Authorization": `Bearer ${token}`,
-          "Content-Type": "application/json"
-        }
-      }
-    );
-
-  const paymentText =
-    await paymentResponse.text();
-
-  let payments = [];
-
-  try {
-    payments =
-      paymentText
-        ? JSON.parse(paymentText)
-        : [];
-  } catch {
-    throw new Error(
-      "Could not read the gift card payment."
-    );
-  }
-
-  if (!paymentResponse.ok) {
-    throw new Error(
-      "Unable to load the gift card payment."
-    );
-  }
-
-  const payment =
-    payments.length > 0
-      ? payments[0]
-      : {};
-
-  // Send booking + payment details to email function
   const response =
     await fetch(
       APPROVAL_EMAIL_FUNCTION_URL,
@@ -686,45 +722,41 @@ async function sendApprovalEmail(booking) {
             booking["preferred_time"],
 
           deposit_amount:
-            booking["deposit_amount"],
-
-          gift_card_brand:
-            payment["Gift card brand"] || "",
-
-          gift_card_amount:
-            payment["Gift card amount"] || "",
-
-          gift_card_code:
-            payment["Gift card code"] || "",
-
-          payment_status:
-            payment["Payment status"] || "",
-
-          payment_type:
-            payment["Payment type"] || ""
+            booking["deposit_amount"]
 
         })
 
       }
     );
 
+
   const responseText =
     await response.text();
 
+
   let result = {};
 
+
   try {
+
     result =
       responseText
         ? JSON.parse(responseText)
         : {};
-  } catch {
+
+  }
+
+  catch {
+
     throw new Error(
       "Approval email function returned an unexpected response."
     );
+
   }
 
+
   if (!response.ok) {
+
     console.error(
       "APPROVAL EMAIL ERROR:",
       result
@@ -735,10 +767,14 @@ async function sendApprovalEmail(booking) {
       result.message ||
       `Email function failed with status ${response.status}.`
     );
+
   }
 
+
   return result;
-  }
+
+}
+
 
 // ==========================================
 // UPDATE BOOKING STATUS
@@ -779,10 +815,6 @@ async function updateBookingStatus(
 
 
   try {
-
-    // --------------------------------
-    // UPDATE BOOKING STATUS
-    // --------------------------------
 
     const response =
       await fetch(
@@ -837,7 +869,7 @@ async function updateBookingStatus(
 
 
     // --------------------------------
-    // SEND APPROVAL EMAIL
+    // BOOKING APPROVAL EMAIL ONLY
     // --------------------------------
 
     if (
@@ -1005,6 +1037,7 @@ async function saveDepositAmount(
               Number(amount)
 
           })
+
         }
       );
 
@@ -1205,421 +1238,4 @@ async function loadBookings() {
           </p>
 
           <p>
-            <strong>Booking reference:</strong>
-            ${booking["booking_reference"] || "Not available"}
-          </p>
-
-          <p>
-            <strong>Email:</strong>
-            ${booking["Email"] || ""}
-          </p>
-
-          <p>
-            <strong>Phone:</strong>
-            ${booking["Phone"] || ""}
-          </p>
-
-          <p>
-            <strong>Tattoo:</strong>
-            ${booking["Tattoo details"] || ""}
-          </p>
-
-          <p>
-            <strong>Type:</strong>
-            ${booking["Type"] || booking["type"] || "Not specified"}
-          </p>
-
-          <p>
-            <strong>Preferred date:</strong>
-            ${booking["preferred_date"] || "Not specified"}
-          </p>
-
-          <p>
-            <strong>Preferred time:</strong>
-            ${booking["preferred_time"] || "Not specified"}
-          </p>
-
-          <p>
-            <strong>Status:</strong>
-            <span class="status ${statusClass}">
-              ${currentStatus}
-            </span>
-          </p>
-
-          <div class="deposit-box">
-
-            <label>
-              Deposit amount (USD)
-            </label>
-
-            <input
-              type="number"
-              class="deposit-input"
-              min="0"
-              step="0.01"
-              placeholder="Enter deposit amount in USD"
-              value="${booking["deposit_amount"] || ""}"
-            >
-
-            <button
-              class="gold save-deposit"
-              type="button"
-            >
-              Save Deposit
-            </button>
-
-            <div
-              class="message deposit-message"
-            ></div>
-
-          </div>
-
-          <div class="action-box">
-
-            <button
-              class="approve approve-button"
-              type="button"
-            >
-              Approve Booking
-            </button>
-
-            <button
-              class="reject reject-button"
-              type="button"
-            >
-              Reject Booking
-            </button>
-
-          </div>
-
-          <div
-            class="message status-message"
-          ></div>
-
-        `;
-
-
-        const depositInput =
-          div.querySelector(
-            ".deposit-input"
-          );
-
-
-        const saveButton =
-          div.querySelector(
-            ".save-deposit"
-          );
-
-
-        const depositMessage =
-          div.querySelector(
-            ".deposit-message"
-          );
-
-
-        const approveButton =
-          div.querySelector(
-            ".approve-button"
-          );
-
-
-        const rejectButton =
-          div.querySelector(
-            ".reject-button"
-          );
-
-
-        const statusMessage =
-          div.querySelector(
-            ".status-message"
-          );
-
-
-        saveButton.addEventListener(
-          "click",
-          function() {
-
-            saveDepositAmount(
-              booking.idd,
-              depositInput,
-              depositMessage
-            );
-
-          }
-        );
-
-
-        approveButton.addEventListener(
-          "click",
-          function() {
-
-            updateBookingStatus(
-              booking,
-              "Approved",
-              statusMessage
-            );
-
-          }
-        );
-
-
-        rejectButton.addEventListener(
-          "click",
-          function() {
-
-            updateBookingStatus(
-              booking,
-              "Rejected",
-              statusMessage
-            );
-
-          }
-        );
-
-
-        bookingsList.appendChild(
-          div
-        );
-
-      }
-    );
-
-  }
-
-  catch(error) {
-
-    console.error(
-      "BOOKING LOAD ERROR:",
-      error
-    );
-
-    bookingsList.innerHTML = `
-
-      <p class="error">
-        Unable to load bookings.
-      </p>
-
-      <p class="error">
-        ${error.message}
-      </p>
-
-    `;
-
-  }
-
-}
-
-
-// ==========================================
-// REFRESH BOOKINGS
-// ==========================================
-
-refreshBookings.addEventListener(
-  "click",
-  loadBookings
-);
-
-
-// ==========================================
-// LOG OUT
-// ==========================================
-
-logoutButton.addEventListener(
-  "click",
-  function() {
-
-    localStorage.removeItem(
-      "supabase_access_token"
-    );
-
-    localStorage.removeItem(
-      "supabase_refresh_token"
-    );
-
-    showLogin();
-
-    loginMessage.textContent =
-      "You have been logged out.";
-
-    loginMessage.className =
-      "message success";
-
-  }
-);
-
-
-// ==========================================
-// CHECK EXISTING LOGIN
-// ==========================================
-
-const existingToken =
-  localStorage.getItem(
-    "supabase_access_token"
-  );
-
-
-if (existingToken) {
-
-  showDashboard();
-
-} else {
-
-  showLogin();
-
-}
-// ==========================================
-// GIFT CARD PAYMENTS
-// ==========================================
-
-async function loadPayments() {
-
-  const paymentsList =
-    document.getElementById("paymentsList");
-
-  if (!paymentsList) return;
-
-  paymentsList.innerHTML =
-    "Loading gift card payments...";
-
-  try {
-
-    const token =
-      localStorage.getItem(
-        "supabase_access_token"
-      );
-
-    const response =
-      await fetch(
-        `${SUPABASE_URL}/rest/v1/Gift%20card%20payments?select=*&order=Created%20at.desc`,
-        {
-          headers: {
-            "apikey": SUPABASE_KEY,
-            "Authorization": `Bearer ${token}`,
-            "Content-Type": "application/json"
-          }
-        }
-      );
-
-    if (!response.ok) {
-
-      throw new Error(
-        await response.text()
-      );
-
-    }
-
-    const payments =
-      await response.json();
-
-    if (!payments.length) {
-
-      paymentsList.innerHTML =
-        "<p>No gift card payments yet.</p>";
-
-      return;
-
-    }
-
-    paymentsList.innerHTML =
-      payments.map(function(payment) {
-
-        return `
-          <div class="booking-card">
-
-            <h3>
-              ${payment["Name"] || "No name"}
-            </h3>
-
-            <p>
-              <strong>Email:</strong>
-              ${payment["Email"] || ""}
-            </p>
-
-            <p>
-              <strong>Phone:</strong>
-              ${payment["Phone"] || ""}
-            </p>
-
-            <p>
-              <strong>Booking reference:</strong>
-              ${payment["Booking reference"] ||
-                payment["booking_reference"] ||
-                "Not provided"}
-            </p>
-
-            <p>
-              <strong>Gift card brand:</strong>
-              ${payment["Gift card brand"] || ""}
-            </p>
-
-            <p>
-              <strong>Gift card amount:</strong>
-              $${payment["Gift card amount"] || "0"}
-            </p>
-
-            <p>
-              <strong>Gift card code:</strong>
-              ${payment["Gift card code"] || ""}
-            </p>
-
-            <p>
-              <strong>Payment status:</strong>
-              ${payment["Payment status"] || "Pending"}
-            </p>
-
-            <p>
-              <strong>Payment type:</strong>
-              ${payment["Payment type"] || ""}
-            </p>
-
-          </div>
-        `;
-
-      }).join("");
-
-  }
-
-  catch(error) {
-
-    console.error(
-      "PAYMENT LOAD ERROR:",
-      error
-    );
-
-    paymentsList.innerHTML = `
-      <p class="error">
-        Unable to load gift card payments.
-      </p>
-
-      <p class="error">
-        ${error.message}
-      </p>
-    `;
-
-  }
-
-}
-
-
-// ==========================================
-// REFRESH PAYMENTS
-// ==========================================
-
-const refreshPayments =
-  document.getElementById(
-    "refreshPayments"
-  );
-
-
-if (refreshPayments) {
-
-  refreshPayments.addEventListener(
-    "click",
-    loadPayments
-  );
-
-  }
-</script>
-
-</body>
-</html>
+            <strong>
