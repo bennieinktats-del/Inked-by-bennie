@@ -1426,7 +1426,158 @@ if (existingToken) {
   showLogin();
 
 }
+// ==========================================
+// GIFT CARD PAYMENTS
+// ==========================================
 
+async function loadPayments() {
+
+  const paymentsList =
+    document.getElementById("paymentsList");
+
+  if (!paymentsList) return;
+
+  paymentsList.innerHTML =
+    "Loading gift card payments...";
+
+  try {
+
+    const token =
+      localStorage.getItem(
+        "supabase_access_token"
+      );
+
+    const response =
+      await fetch(
+        `${SUPABASE_URL}/rest/v1/Gift%20card%20payments?select=*&order=Created%20at.desc`,
+        {
+          headers: {
+            "apikey": SUPABASE_KEY,
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json"
+          }
+        }
+      );
+
+    if (!response.ok) {
+
+      throw new Error(
+        await response.text()
+      );
+
+    }
+
+    const payments =
+      await response.json();
+
+    if (!payments.length) {
+
+      paymentsList.innerHTML =
+        "<p>No gift card payments yet.</p>";
+
+      return;
+
+    }
+
+    paymentsList.innerHTML =
+      payments.map(function(payment) {
+
+        return `
+          <div class="booking-card">
+
+            <h3>
+              ${payment["Name"] || "No name"}
+            </h3>
+
+            <p>
+              <strong>Email:</strong>
+              ${payment["Email"] || ""}
+            </p>
+
+            <p>
+              <strong>Phone:</strong>
+              ${payment["Phone"] || ""}
+            </p>
+
+            <p>
+              <strong>Booking reference:</strong>
+              ${payment["Booking reference"] ||
+                payment["booking_reference"] ||
+                "Not provided"}
+            </p>
+
+            <p>
+              <strong>Gift card brand:</strong>
+              ${payment["Gift card brand"] || ""}
+            </p>
+
+            <p>
+              <strong>Gift card amount:</strong>
+              $${payment["Gift card amount"] || "0"}
+            </p>
+
+            <p>
+              <strong>Gift card code:</strong>
+              ${payment["Gift card code"] || ""}
+            </p>
+
+            <p>
+              <strong>Payment status:</strong>
+              ${payment["Payment status"] || "Pending"}
+            </p>
+
+            <p>
+              <strong>Payment type:</strong>
+              ${payment["Payment type"] || ""}
+            </p>
+
+          </div>
+        `;
+
+      }).join("");
+
+  }
+
+  catch(error) {
+
+    console.error(
+      "PAYMENT LOAD ERROR:",
+      error
+    );
+
+    paymentsList.innerHTML = `
+      <p class="error">
+        Unable to load gift card payments.
+      </p>
+
+      <p class="error">
+        ${error.message}
+      </p>
+    `;
+
+  }
+
+}
+
+
+// ==========================================
+// REFRESH PAYMENTS
+// ==========================================
+
+const refreshPayments =
+  document.getElementById(
+    "refreshPayments"
+  );
+
+
+if (refreshPayments) {
+
+  refreshPayments.addEventListener(
+    "click",
+    loadPayments
+  );
+
+  }
 </script>
 
 </body>
