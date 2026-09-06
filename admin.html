@@ -584,7 +584,7 @@ loginForm.addEventListener(
 // SEND APPROVAL EMAIL
 // ==========================================
 
-  async function sendApprovalEmail(booking) {
+async function sendApprovalEmail(booking) {
 
   const token =
     localStorage.getItem(
@@ -652,9 +652,7 @@ loginForm.addEventListener(
         ? JSON.parse(responseText)
         : {};
 
-  }
-
-  catch {
+  } catch {
 
     throw new Error(
       "Approval email function returned an unexpected response."
@@ -674,83 +672,6 @@ loginForm.addEventListener(
       result.error ||
       result.message ||
       `Email function failed with status ${response.status}.`
-    );
-
-  }
-
-
-  return result;
-
-  }{
-
-  const response =
-    await fetch(
-      APPROVAL_EMAIL_FUNCTION_URL,
-      {
-        method: "POST",
-
-        headers: {
-          "Content-Type": "application/json"
-        },
-
-        body: JSON.stringify({
-
-          client_name:
-            booking["Client name"] || "there",
-
-          email:
-            booking["Email"],
-
-          booking_reference:
-            booking["booking_reference"],
-
-          preferred_date:
-            booking["preferred_date"],
-
-          preferred_time:
-            booking["preferred_time"],
-
-          deposit_amount:
-            booking["deposit_amount"]
-
-        })
-
-      }
-    );
-
-
-  const responseText =
-    await response.text();
-
-
-  let result = {};
-
-  try {
-
-    result =
-      responseText
-        ? JSON.parse(responseText)
-        : {};
-
-  } catch {
-
-    throw new Error(
-      "Approval email function returned an unexpected response."
-    );
-
-  }
-
-
-  if (!response.ok) {
-
-    console.error(
-      "APPROVAL EMAIL ERROR:",
-      result
-    );
-
-    throw new Error(
-      result.error ||
-      "Approval email could not be sent."
     );
 
   }
@@ -1046,7 +967,7 @@ async function saveDepositAmount(
 
 
     messageElement.textContent =
-      `Deposit saved: ₦${Number(amount).toLocaleString()}`;
+      `Deposit saved: $${Number(amount).toLocaleString()}`;
 
     messageElement.className =
       "message success";
@@ -1248,60 +1169,38 @@ async function loadBookings() {
 
           <p>
             <strong>Type:</strong>
-            ${booking["tattoo_type"] || ""}
-          </p>
-
-          <p>
-            <strong>Placement:</strong>
-            ${booking["Placement"] || ""}
-          </p>
-
-          <p>
-            <strong>Size:</strong>
-            ${booking["Size"] || ""}
+            ${booking["Type"] || booking["type"] || "Not specified"}
           </p>
 
           <p>
             <strong>Preferred date:</strong>
-            ${booking["preferred_date"] || "Not provided"}
+            ${booking["preferred_date"] || "Not specified"}
           </p>
 
           <p>
             <strong>Preferred time:</strong>
-            ${booking["preferred_time"] || "Not provided"}
+            ${booking["preferred_time"] || "Not specified"}
           </p>
 
           <p>
-            <strong>Additional details:</strong>
-            ${booking["Additional details"] || "None"}
-          </p>
-
-          <p>
-            <strong>Booking status:</strong>
-
+            <strong>Status:</strong>
             <span class="status ${statusClass}">
               ${currentStatus}
             </span>
           </p>
 
-          <p>
-            <strong>Deposit status:</strong>
-            ${booking["Deposit status"] || "Not paid"}
-          </p>
-
-
           <div class="deposit-box">
 
             <label>
-              50% Deposit Amount
+              Deposit amount (USD)
             </label>
 
             <input
               type="number"
               class="deposit-input"
-              min="1"
-              step="1"
-              placeholder="Example: 50000"
+              min="0"
+              step="0.01"
+              placeholder="Enter deposit amount in USD"
               value="${booking["deposit_amount"] || ""}"
             >
 
@@ -1317,7 +1216,6 @@ async function loadBookings() {
             ></div>
 
           </div>
-
 
           <div class="action-box">
 
@@ -1336,7 +1234,6 @@ async function loadBookings() {
             </button>
 
           </div>
-
 
           <div
             class="message status-message"
