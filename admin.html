@@ -1379,7 +1379,10 @@ const response =
 await fetch(
 `${SUPABASE_URL}/rest/v1/flash_designs?select=*&order=created_at.desc`,
 {
-headers:getHeaders()
+headers:{
+"apikey":SUPABASE_KEY,
+"Content-Type":"application/json"
+  }
 }
 );
 
