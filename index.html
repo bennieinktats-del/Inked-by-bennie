@@ -92,13 +92,22 @@
   </select>
 </label>
     <div id="flashFields">
-  <label>Choose your flash design
-    <select name="design">
-      <option value="">Loading designs...</option>
-    </select>
-  </label>
-    </div>
 
+  <label>Choose your flash design</label>
+
+  <div id="flashDesignGallery">
+    <p>Loading flash designs...</p>
+  </div>
+
+  <!-- This keeps the selected design connected to the booking form -->
+  <input
+    type="hidden"
+    name="design"
+    id="selectedFlashDesign"
+    value=""
+  >
+
+    </div>
     <div id="customFields" class="hidden">
       <label>Tell me about your idea<textarea name="idea" rows="5" placeholder="Describe the tattoo you have in mind..."></textarea></label>
       <label>Reference / inspiration image
