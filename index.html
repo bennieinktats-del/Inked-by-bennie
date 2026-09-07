@@ -7,289 +7,56 @@
   <meta name="description" content="Inked by Bennie — minimalist custom and flash tattoos.">
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
+
 <header class="nav">
   <a class="logo" href="index.html">INKED <span>BY BENNIE</span></a>
+
   <nav>
-    <a href="#designs">Designs</a>
     <a href="#booking">Book</a>
+    <a href="#payment">Payment</a>
     <a href="#policies">Policies</a>
   </nav>
 </header>
 
 <main>
+
 <section class="hero">
   <p class="eyebrow">TATTOOS • FLASH • CUSTOM</p>
+
   <h1>Made to be <em>yours.</em></h1>
-  <p class="hero-copy">Minimal, intentional tattoos by Inked by Bennie. Choose a ready-made flash design or tell me what you're imagining.</p>
+
+  <p class="hero-copy">
+    Minimal, intentional tattoos by Inked by Bennie.
+    Choose a ready-made flash design or tell me what you're imagining.
+  </p>
+
   <div class="buttons">
-    <a class="button gold" href="#designs">View Designs</a>
-    <a class="button outline" href="#booking">Book a Tattoo</a>
+    <a class="button gold" href="#booking">Book a Tattoo</a>
+    <a class="button outline" href="#payment">Payment Information</a>
   </div>
 </section>
 
-<section id="designs" class="section">
-  <div class="section-head">
-    <p class="eyebrow">FLASH COLLECTION</p>
-    <h2>Choose your design</h2>
-    <p>30 simple, tattooable flash slots. Replace each placeholder with your final artwork.</p>
-  </div>
-  <div class="grid">
-    <!-- Replace each placeholder image with your actual design -->
-    <script>
-      <div id="flashFields">
-  <label>Choose your flash design
-    <select name="design">
-      <option value="">Loading designs...</option>
-    </select>
-  </label>
-</div>
-      
-    </script>
-  </div>
-</section>
 
-<section id="booking" class="section dark-section">
-  <div class="section-head">
-    <p class="eyebrow">BOOKING</p>
-    <h2>Let's make it permanent.</h2>
-    <p>Start with a flash design or submit a custom tattoo request.</p>
-  </div>
-  <div class="form-group">
-  <label for="tattooType">Tattoo Type</label>
-  <select id="tattooType" name="tattooType" required>
-    <option value="">Select tattoo type</option>
-    <option value="Permanent Tattoo">Permanent Tattoo</option>
-    <option value="Temporary Henna">Temporary Tattoo (Henna)</option>
-  </select>
-</div>
+<!-- =========================
+     PAYMENT INFORMATION
+========================= -->
 
-  <div class="booking-options">
-    <button class="option active" data-type="flash">FLASH DESIGN</button>
-    <button class="option" data-type="custom">CUSTOM TATTOO</button>
-  </div>
-<form id="bookingForm" class="form">
-    <input type="hidden" id="requestType" name="requestType" value="Flash Design">
-
-    <label>Full name<input name="name" required placeholder="Your name"></label>
-    <label>Email<input type="email" name="email" required placeholder="you@example.com"></label>
-    <label>Phone / WhatsApp<input name="phone" required placeholder="+1..."></label>
-<label>Preferred appointment date
-  <input type="date" name="preferred_date" required>
-</label>
-
-<label>Preferred appointment time
-  <select name="preferred_time" required>
-    <option value="">Select preferred time</option>
-    <option>10:00 AM</option>
-    <option>11:00 AM</option>
-    <option>12:00 PM</option>
-    <option>1:00 PM</option>
-    <option>2:00 PM</option>
-    <option>3:00 PM</option>
-    <option>4:00 PM</option>
-    <option>5:00 PM</option>
-  </select>
-</label>
-    <div id="flashFields">
-
-  <label>Choose your flash design</label>
-
-  <div id="flashDesignGallery">
-    <p>Loading flash designs...</p>
-  </div>
-
-  <!-- This keeps the selected design connected to the booking form -->
-  <input
-    type="hidden"
-    name="design"
-    id="selectedFlashDesign"
-    value=""
-  >
-
-    </div>
-    <div id="customFields" class="hidden">
-      <label>Tell me about your idea<textarea name="idea" rows="5" placeholder="Describe the tattoo you have in mind..."></textarea></label>
-      <label>Reference / inspiration image
-        <input type="file" name="reference" accept="image/*">
-        <small>Optional — upload an image that captures the style or idea.</small>
-      </label>
-    </div>
-
-    <label>Tattoo placement
-      <select name="placement" required>
-        <option value="">Select placement</option>
-        <option>Arm</option><option>Forearm</option><option>Wrist</option>
-        <option>Hand</option><option>Shoulder</option><option>Back</option>
-        <option>Chest</option><option>Rib</option><option>Thigh</option>
-        <option>Calf</option><option>Ankle</option><option>Other</option>
-      </select>
-    </label>
-
-    <label>Desired size
-      <select name="size" required>
-        <option value="">Select approximate size</option>
-        <option>Under 3 cm</option><option>3–5 cm</option><option>5–10 cm</option>
-        <option>10–15 cm</option><option>15+ cm</option><option>Not sure — I'd like advice</option>
-      </select>
-    </label>
-
-    <label>Placement photo <span class="muted">(recommended)</span>
-      <input type="file" name="placementPhoto" accept="image/*">
-      <small>A clear photo of the area helps with sizing and placement.</small>
-    </label>
-
-    <label>Additional notes<textarea name="notes" rows="4" placeholder="Anything else I should know?"></textarea></label>
-
-    <label class="check"><input type="checkbox" required> I have read and agree to the booking policies.</label>
-    <button class="button gold full" type="submit">Submit Booking Request</button>
-    <p class="form-note">Your appointment is not confirmed until your deposit has been received and your booking is approved.</p>
-  </form>
-</section>
-
-<section id="policies" class="section">
-  <div class="section-head">
-    <p class="eyebrow">BEFORE YOU BOOK</p>
-    <h2>Policies</h2>
-  </div>
-<section id="policies" class="section">
-  <div class="section-head">
-    <p class="eyebrow">PLEASE READ BEFORE BOOKING</p>
-    <h2>Policies</h2>
-  </div>
-
-  <div class="read-me">
-    <h3>PLEASE READ BEFORE BOOKING</h3>
-    <p>
-      Please read all Inked by Bennie policies carefully before submitting
-      your booking request. By submitting the form, you confirm that you
-      have read, understood, and agreed to comply with these policies.
-    </p>
-  </div>
-
-  <div class="policies">
-
-    <div class="policy-item">
-      <h3>Deposit & Payment</h3>
-      <p>
-        A 50% deposit is required to secure your appointment. Your
-        appointment is not confirmed until the required deposit has been
-        successfully received.
-      </p>
-    </div>
-
-    <div class="policy-item">
-      <h3>Cancellation & Refunds</h3>
-      <p>
-        Cancellations made 7 days or more before the appointment are
-        eligible for a refund of the deposit. Cancellations made less than
-        7 days before the appointment are non-refundable.
-      </p>
-      <p>
-        Deposits are also non-refundable in the event of a no-show.
-      </p>
-    </div>
-
-    <div class="policy-item">
-      <h3>Rescheduling</h3>
-      <p>
-        Rescheduling requests made at least 7 days before the appointment
-        can be made without a rescheduling fee. Requests made less than
-        7 days before the appointment are subject to a $30 rescheduling fee.
-      </p>
-    </div>
-
-    <div class="policy-item">
-      <h3>Lateness</h3>
-      <p>
-        A 30-minute grace period is provided for each appointment.
-        Arriving 30–40 minutes late will result in a $20 lateness fee.
-        Arriving more than 40 minutes late will result in cancellation of
-        the appointment and the deposit will be non-refundable.
-      </p>
-    </div>
-
-    <div class="policy-item">
-      <h3>Age Requirement</h3>
-      <p>
-        Clients must be 18 years or older to receive a tattoo. Valid
-        identification may be requested to verify age.
-      </p>
-    </div>
-
-    <div class="policy-item">
-      <h3>Guests</h3>
-      <p>
-        A maximum of one guest is permitted during your appointment.
-      </p>
-    </div>
-
-    <div class="policy-item">
-      <h3>Flash & Custom Designs</h3>
-      <p>
-        Flash designs are intended to be tattooed as displayed. Requests
-        for modifications may be submitted by email and must be approved
-        before the appointment.
-      </p>
-      <p>
-        Significant changes to a flash design may be considered a custom
-        design and may require a different price.
-      </p>
-    </div>
-
-    <div class="policy-item">
-      <h3>Skin & Allergies</h3>
-      <p>
-        Clients must disclose any known skin allergies, sensitivities,
-        previous reactions to tattoo products, or other relevant skin
-        concerns before their appointment.
-      </p>
-      <p>
-        Please do not arrive with sunburned, irritated, infected, or
-        otherwise compromised skin in the area being tattooed.
-      </p>
-    </div>
-
-    <div class="policy-item">
-      <h3>Photography & Portfolio</h3>
-      <p>
-        Finished tattoo work may be photographed and used by Inked by
-        Bennie for portfolio, website, and social media purposes.
-      </p>
-    </div>
-
-    <div class="policy-item">
-      <h3>Booking Agreement</h3>
-      <p>
-        By submitting your booking request, you confirm that the
-        information you have provided is accurate and that you agree to
-        follow all Inked by Bennie policies.
-      </p>
-    </div>
-
-  </div>
-        </section>
-</main>
-
-<footer>
-  <div class="logo">
-  <div class="logo">
-  <img src="1788184010178.png" alt="Inked by Bennie">
-  </div>
-  </div>
-  <p>© 2026 Inked by Bennie. All rights reserved.</p>
-</footer>
-
-<script src="script.js"></script>
-<!-- Payment Page -->
 <section id="payment" class="section payment-page">
 
   <div class="section-head">
     <p class="eyebrow">PAYMENT</p>
-    <h2>Complete Your Payment</h2>
+    <h2>Payment Information</h2>
+
+    <p>
+      Please review the payment information below before submitting your
+      booking request.
+    </p>
   </div>
 
   <div class="payment-warning">
+
     <h3>PLEASE READ BEFORE PROCEEDING</h3>
 
     <p>
@@ -307,6 +74,7 @@
       Your appointment will only proceed after your booking has been approved
       and your payment has been successfully verified.
     </p>
+
   </div>
 
   <div class="payment-box">
@@ -315,69 +83,90 @@
 
     <p>
       Once your booking has been approved by Inked by Bennie, enter your
-      gift-card code below for manual verification.
+      gift-card information below for manual verification.
     </p>
-<form id="giftCardForm" class="form">
 
-  <label>Full name
-    <input type="text" name="name" placeholder="Your full name" required>
-  </label>
+    <form id="giftCardForm" class="form">
 
-  <label>Email
-    <input type="email" name="email" placeholder="you@example.com" required>
-  </label>
+      <label>
+        Full name
+        <input
+          type="text"
+          name="name"
+          placeholder="Your full name"
+          required
+        >
+      </label>
 
-  <label>Phone / WhatsApp
-    <input type="tel" name="phone" placeholder="+1..." required>
-  </label>
+      <label>
+        Email
+        <input
+          type="email"
+          name="email"
+          placeholder="you@example.com"
+          required
+        >
+      </label>
 
-  <label>Booking reference
-    <input type="text" name="booking_reference" placeholder="Your booking reference" required>
-  </label>
+      <label>
+        Phone / WhatsApp
+        <input
+          type="tel"
+          name="phone"
+          placeholder="+1..."
+          required
+        >
+      </label>
 
-<label>Gift card type
-  <input
-    type="text"
-    name="gift_card_brand"
-    placeholder="Enter gift card type"
-    required
-  >
-</label>
+      <label>
+        Booking reference
+        <input
+          type="text"
+          name="booking_reference"
+          id="giftCardBookingReference"
+          placeholder="Your booking reference"
+          required
+        >
+      </label>
 
-  <label>Gift card amount
-    <input
-      type="number"
-      name="gift_card_amount"
-      placeholder="Enter the exact requested amount"
-      min="1"
-      step="0.01"
-      required
-    >
-  <label>Approved deposit amount
-  <input
-    type="number"
-    id="giftCardAmount"
-    name="gift_card_amount"
-    placeholder="Enter your booking reference first"
-    readonly
-    required
-  >
-</label>
+      <label>
+        Gift card type
+        <input
+          type="text"
+          name="gift_card_brand"
+          placeholder="Enter gift card type"
+          required
+        >
+      </label>
 
-<p id="depositMessage" class="small">
-  Enter your booking reference to see your approved deposit amount.
-</p>
+      <label>
+        Approved deposit amount
+        <input
+          type="number"
+          id="giftCardAmount"
+          name="gift_card_amount"
+          placeholder="Enter approved deposit amount"
+          min="1"
+          step="0.01"
+          required
+        >
+      </label>
 
-  <p class="small">
-    Please purchase a gift card for the exact deposit amount requested.
-    Do not enter your banking password, OTP, PIN, or other unrelated banking information.
-  </p>
+      <p id="depositMessage" class="small">
+        Enter the approved deposit amount shown by Inked by Bennie.
+      </p>
 
-  <button type="submit" class="button gold full">
-    Submit Payment for Verification
-  </button>
+      <p class="small">
+        Please purchase a gift card for the exact deposit amount requested.
+        Do not enter your banking password, OTP, PIN, or other unrelated
+        banking information.
+      </p>
 
-</form>
+      <button type="submit" class="button gold full">
+        Submit Payment for Verification
+      </button>
+
+    </form>
 
     <p class="payment-note">
       Payment is not considered complete until it has been manually verified
@@ -387,5 +176,419 @@
   </div>
 
 </section>
-</body>
-</html>
+
+
+<!-- =========================
+     BOOKING
+========================= -->
+
+<section id="booking" class="section dark-section">
+
+  <div class="section-head">
+
+    <p class="eyebrow">BOOKING</p>
+
+    <h2>Let's make it permanent.</h2>
+
+    <p>
+      Start with a flash design or submit a custom tattoo request.
+    </p>
+
+  </div>
+
+
+  <div class="form-group">
+
+    <label for="tattooType">Tattoo Type</label>
+
+    <select id="tattooType" name="tattooType" required>
+
+      <option value="">Select tattoo type</option>
+
+      <option value="Permanent Tattoo">
+        Permanent Tattoo
+      </option>
+
+      <option value="Temporary Henna">
+        Temporary Tattoo (Henna)
+      </option>
+
+    </select>
+
+  </div>
+
+
+  <div class="booking-options">
+
+    <button
+      type="button"
+      class="option active"
+      data-type="flash"
+    >
+      FLASH DESIGN
+    </button>
+
+    <button
+      type="button"
+      class="option"
+      data-type="custom"
+    >
+      CUSTOM TATTOO
+    </button>
+
+  </div>
+
+
+  <form id="bookingForm" class="form">
+
+    <input
+      type="hidden"
+      id="requestType"
+      name="requestType"
+      value="Flash Design"
+    >
+
+
+    <label>
+      Full name
+      <input
+        name="name"
+        required
+        placeholder="Your name"
+      >
+    </label>
+
+
+    <label>
+      Email
+      <input
+        type="email"
+        name="email"
+        required
+        placeholder="you@example.com"
+      >
+    </label>
+
+
+    <label>
+      Phone / WhatsApp
+      <input
+        name="phone"
+        required
+        placeholder="+1..."
+      >
+    </label>
+
+
+    <label>
+      Preferred appointment date
+
+      <input
+        type="date"
+        name="preferred_date"
+        required
+      >
+
+    </label>
+
+
+    <label>
+      Preferred appointment time
+
+      <select
+        name="preferred_time"
+        required
+      >
+
+        <option value="">
+          Select preferred time
+        </option>
+
+        <option>10:00 AM</option>
+        <option>11:00 AM</option>
+        <option>12:00 PM</option>
+        <option>1:00 PM</option>
+        <option>2:00 PM</option>
+        <option>3:00 PM</option>
+        <option>4:00 PM</option>
+        <option>5:00 PM</option>
+
+      </select>
+
+    </label>
+
+
+    <!-- FLASH DESIGNS FROM SUPABASE -->
+
+    <div id="flashFields">
+
+      <label>
+        Choose your flash design
+      </label>
+
+      <div id="flashDesignGallery">
+
+        <p>
+          Loading flash designs...
+        </p>
+
+      </div>
+
+
+      <input
+        type="hidden"
+        name="design"
+        id="selectedFlashDesign"
+        value=""
+      >
+
+    </div>
+
+
+    <!-- CUSTOM TATTOO -->
+
+    <div
+      id="customFields"
+      class="hidden"
+    >
+
+      <label>
+        Tell me about your idea
+
+        <textarea
+          name="idea"
+          rows="5"
+          placeholder="Describe the tattoo you have in mind..."
+        ></textarea>
+
+      </label>
+
+
+      <label>
+        Reference / inspiration image
+
+        <input
+          type="file"
+          name="reference"
+          accept="image/*"
+        >
+
+        <small>
+          Optional — upload an image that captures the style or idea.
+        </small>
+
+      </label>
+
+    </div>
+
+
+    <label>
+      Tattoo placement
+
+      <select
+        name="placement"
+        required
+      >
+
+        <option value="">
+          Select placement
+        </option>
+
+        <option>Arm</option>
+        <option>Forearm</option>
+        <option>Wrist</option>
+        <option>Hand</option>
+        <option>Shoulder</option>
+        <option>Back</option>
+        <option>Chest</option>
+        <option>Rib</option>
+        <option>Thigh</option>
+        <option>Calf</option>
+        <option>Ankle</option>
+        <option>Other</option>
+
+      </select>
+
+    </label>
+
+
+    <label>
+      Desired size
+
+      <select
+        name="size"
+        required
+      >
+
+        <option value="">
+          Select approximate size
+        </option>
+
+        <option>Under 3 cm</option>
+        <option>3–5 cm</option>
+        <option>5–10 cm</option>
+        <option>10–15 cm</option>
+        <option>15+ cm</option>
+        <option>
+          Not sure — I'd like advice
+        </option>
+
+      </select>
+
+    </label>
+
+
+    <label>
+      Placement photo
+      <span class="muted">(recommended)</span>
+
+      <input
+        type="file"
+        name="placementPhoto"
+        accept="image/*"
+      >
+
+      <small>
+        A clear photo of the area helps with sizing and placement.
+      </small>
+
+    </label>
+
+
+    <label>
+      Additional notes
+
+      <textarea
+        name="notes"
+        rows="4"
+        placeholder="Anything else I should know?"
+      ></textarea>
+
+    </label>
+
+
+    <label class="check">
+
+      <input
+        type="checkbox"
+        required
+      >
+
+      I have read and agree to the booking policies.
+
+    </label>
+
+
+    <button
+      class="button gold full"
+      type="submit"
+    >
+      Submit Booking Request
+    </button>
+
+
+    <p class="form-note">
+      Your appointment is not confirmed until your deposit has been received
+      and your booking is approved.
+    </p>
+
+  </form>
+
+</section>
+
+
+<!-- =========================
+     POLICIES
+     CONTENT PRESERVED
+========================= -->
+
+<section id="policies" class="section">
+
+  <div class="section-head">
+
+    <p class="eyebrow">PLEASE READ BEFORE BOOKING</p>
+
+    <h2>Policies</h2>
+
+  </div>
+
+
+  <div class="read-me">
+
+    <h3>PLEASE READ BEFORE BOOKING</h3>
+
+    <p>
+      Please read all Inked by Bennie policies carefully before submitting
+      your booking request. By submitting the form, you confirm that you
+      have read, understood, and agreed to comply with these policies.
+    </p>
+
+  </div>
+
+
+  <div class="policies">
+
+
+    <div class="policy-item">
+
+      <h3>Deposit & Payment</h3>
+
+      <p>
+        A 50% deposit is required to secure your appointment. Your
+        appointment is not confirmed until the required deposit has been
+        successfully received.
+      </p>
+
+    </div>
+
+
+    <div class="policy-item">
+
+      <h3>Cancellation & Refunds</h3>
+
+      <p>
+        Cancellations made 7 days or more before the appointment are
+        eligible for a refund of the deposit. Cancellations made less than
+        7 days before the appointment are non-refundable.
+      </p>
+
+      <p>
+        Deposits are also non-refundable in the event of a no-show.
+      </p>
+
+    </div>
+
+
+    <div class="policy-item">
+
+      <h3>Rescheduling</h3>
+
+      <p>
+        Rescheduling requests made at least 7 days before the appointment
+        can be made without a rescheduling fee. Requests made less than
+        7 days before the appointment are subject to a $30 rescheduling fee.
+      </p>
+
+    </div>
+
+
+    <div class="policy-item">
+
+      <h3>Lateness</h3>
+
+      <p>
+        A 30-minute grace period is provided for each appointment.
+        Arriving 30–40 minutes late will result in a $20 lateness fee.
+        Arriving more than 40 minutes late will result in cancellation of
+        the appointment and the deposit will be non-refundable.
+      </p>
+
+    </div>
+
+
+    <div class="policy-item">
+
+      <h3>Age Requirement</h3>
+
+      <p>
+        Clients must be 
