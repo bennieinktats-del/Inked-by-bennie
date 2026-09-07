@@ -955,7 +955,7 @@ text ||
 }
 
 
-/* =========================
+  /* =========================
 APPROVE BOOKING
 ========================= */
 
@@ -998,18 +998,38 @@ const email =
 booking["Email"] ||
 "";
 
-const preferredDate =
+const appointmentDate =
 booking["Preferred date"] ||
 "";
 
-const preferredTime =
+const appointmentTime =
 booking["Preferred time"] ||
 "";
 
-const deposit =
+const depositAmount =
 booking["Deposit amount"] ||
 booking["deposit_amount"] ||
 "";
+
+if(!email){
+
+alert(
+"This booking has no client email address."
+);
+
+return;
+
+}
+
+if(!reference){
+
+alert(
+"This booking has no booking reference."
+);
+
+return;
+
+}
 
 try{
 
@@ -1031,45 +1051,23 @@ headers:{
 
 body:JSON.stringify({
 
-client_name:
+clientName:
 clientName,
 
 email:
 email,
 
-booking_reference:
+bookingReference:
 reference,
 
-preferred_date:
-preferredDate,
+appointmentDate:
+appointmentDate,
 
-preferred_time:
-preferredTime,
+appointmentTime:
+appointmentTime,
 
-deposit_amount:
-deposit,
-
-tattoo_type:
-booking["Tattoo"] ||
-"",
-
-tattoo_choice:
-booking["Type"] ||
-"",
-
-design:
-booking["Design"] ||
-booking["Flash Design"] ||
-booking["Flash design"] ||
-"",
-
-placement:
-booking["Placement"] ||
-"",
-
-size:
-booking["Size"] ||
-""
+depositAmount:
+depositAmount
 
 })
 
@@ -1105,7 +1103,10 @@ await loadBookings();
 }
 catch(error){
 
-console.error(error);
+console.error(
+"BOOKING APPROVAL ERROR:",
+error
+);
 
 alert(
 error.message
@@ -1114,7 +1115,6 @@ error.message
 }
 
 }
-
 
 /* =========================
 REJECT BOOKING
