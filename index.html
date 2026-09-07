@@ -91,14 +91,11 @@
   </select>
 </label>
     <div id="flashFields">
-      <label>Design number
-        <select name="design">
-          <option value="">Select a design</option>
-          <script>
-            for (let i=1;i<=30;i++) document.write(`<option>Design ${String(i).padStart(2,'0')}</option>`);
-          </script>
-        </select>
-      </label>
+  <label>Choose your flash design
+    <select name="design">
+      <option value="">Loading designs...</option>
+    </select>
+  </label>
     </div>
 
     <div id="customFields" class="hidden">
