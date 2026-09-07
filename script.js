@@ -534,21 +534,25 @@ document.addEventListener("DOMContentLoaded", function () {
 
         if (!response.ok) {
 
-          const errorText =
-            await response.text();
+  const errorText =
+    await response.text();
 
+  console.error(
+    "SUPABASE FLASH DESIGN ERROR:",
+    response.status,
+    errorText
+  );
 
-          console.error(
-            "Supabase flash design error:",
-            errorText
-          );
+  flashDesignGallery.innerHTML =
+    "<p style='color:red;'>Supabase error " +
+    response.status +
+    ": " +
+    errorText +
+    "</p>";
 
+  return;
 
-          throw new Error(
-            "Could not load flash designs."
-          );
-
-        }
+    }
 
 
         const designs =
