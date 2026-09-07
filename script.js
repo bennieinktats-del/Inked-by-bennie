@@ -479,6 +479,6 @@ if (flashDesignGallery) {
 
   }
 
-  loadFlashDesigns();
+    loadFlashDesigns();
 
-}
+});
