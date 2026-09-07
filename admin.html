@@ -304,98 +304,94 @@ LOGIN
 
 loginForm.addEventListener("submit", async function(event){
 
-event.preventDefault();
+  event.preventDefault();
 
-const email =
-document.getElementById("adminEmail").value.trim();
+  const emailInput = document.getElementById("adminEmail");
+  const passwordInput = document.getElementById("adminPassword");
 
-const password =
-document.getElementById("adminPassword").value;
+  const email = emailInput.value.trim();
+  const password = passwordInput.value;
 
-loginMessage.textContent =
-"Logging in...";
+  if (!email || !password) {
+    loginMessage.textContent = "Please enter your email and password.";
+    return;
+  }
 
-try{
+  loginMessage.textContent = "Logging in...";
 
-const response =
-await fetch(
-`${SUPABASE_URL}/auth/v1/token?grant_type=password`,
-{
-method:"POST",
+  try {
 
-headers:{
-"apikey":SUPABASE_KEY,
-"Content-Type":"application/json"
-},
+    const response = await fetch(
+      `${SUPABASE_URL}/auth/v1/token?grant_type=password`,
+      {
+        method: "POST",
 
-body:JSON.stringify({
-email:email,
-password:password
-})
-}
-);
+        headers: {
+          "apikey": SUPABASE_KEY,
+          "Content-Type": "application/json"
+        },
 
-const data =
-await response.json();
+        body: JSON.stringify({
+          email: email,
+          password: password
+        })
+      }
+    );
 
-if(!response.ok){
+    const data = await response.json();
 
-throw new Error(
-data.error_description ||
-data.msg ||
-"Login failed."
-);
+    console.log("SUPABASE LOGIN RESPONSE:", data);
 
-}
+    if (!response.ok) {
+      throw new Error(
+        data.error_description ||
+        data.msg ||
+        data.message ||
+        "Login failed."
+      );
+    }
 
-if(
-!data.access_token ||
-!data.refresh_token
-){
+    if (!data.access_token) {
+      throw new Error("No access token was returned.");
+    }
 
-throw new Error(
-"Login did not return a valid session."
-);
+    if (!data.user) {
+      throw new Error("No user account was returned.");
+    }
 
-}
+    if (data.user.id !== ADMIN_USER_ID) {
+      throw new Error(
+        "This account is not authorized as admin."
+      );
+    }
 
-if(
-!data.user ||
-data.user.id !== ADMIN_USER_ID
-){
+    localStorage.setItem(
+      "admin_access_token",
+      data.access_token
+    );
 
-throw new Error(
-"This account is not authorized as admin."
-);
+    localStorage.setItem(
+      "admin_refresh_token",
+      data.refresh_token || ""
+    );
 
-}
+    loginMessage.textContent = "Login successful!";
 
-localStorage.setItem(
-"admin_access_token",
-data.access_token
-);
+    loginForm.reset();
 
-localStorage.setItem(
-"admin_refresh_token",
-data.refresh_token
-);
+    showDashboard();
 
-showDashboard();
+  }
+  catch(error) {
 
-}
-catch(error){
+    console.error("LOGIN ERROR:", error);
 
-console.error(error);
+    loginMessage.textContent =
+      error.message || "Login failed.";
 
-loginMessage.textContent =
-error.message ||
-"Login failed.";
-
-}
+  }
 
 });
-
-
 /* =========================
 SHOW DASHBOARD
 ========================= */
