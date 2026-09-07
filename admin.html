@@ -955,7 +955,7 @@ text ||
 }
 
 
-  /* =========================
+ /* =========================
 APPROVE BOOKING
 ========================= */
 
@@ -976,14 +976,6 @@ return;
 
 }
 
-if(!confirm(
-"Approve this booking?"
-)){
-
-return;
-
-}
-
 const reference =
 booking["Booking reference"] ||
 booking["booking_reference"] ||
@@ -998,11 +990,11 @@ const email =
 booking["Email"] ||
 "";
 
-const appointmentDate =
+const preferredDate =
 booking["Preferred date"] ||
 "";
 
-const appointmentTime =
+const preferredTime =
 booking["Preferred time"] ||
 "";
 
@@ -1030,6 +1022,241 @@ alert(
 return;
 
 }
+
+
+/* =========================
+APPOINTMENT PICKER
+========================= */
+
+const overlay =
+document.createElement("div");
+
+overlay.style.position =
+"fixed";
+
+overlay.style.top =
+"0";
+
+overlay.style.left =
+"0";
+
+overlay.style.width =
+"100%";
+
+overlay.style.height =
+"100%";
+
+overlay.style.background =
+"rgba(0,0,0,0.85)";
+
+overlay.style.display =
+"flex";
+
+overlay.style.alignItems =
+"center";
+
+overlay.style.justifyContent =
+"center";
+
+overlay.style.zIndex =
+"99999";
+
+const modal =
+document.createElement("div");
+
+modal.style.background =
+"#111";
+
+modal.style.border =
+"1px solid #d4af37";
+
+modal.style.borderRadius =
+"15px";
+
+modal.style.padding =
+"25px";
+
+modal.style.width =
+"90%";
+
+modal.style.maxWidth =
+"400px";
+
+modal.style.color =
+"white";
+
+modal.innerHTML = `
+
+<h2 style="color:#d4af37;margin-top:0;">
+Confirm Appointment
+</h2>
+
+<p>
+<strong>Client:</strong>
+${clientName}
+</p>
+
+<p>
+<strong>Client requested:</strong><br>
+${preferredDate || "No date selected"}
+at
+${preferredTime || "No time selected"}
+</p>
+
+<label>
+<strong>Choose confirmed date:</strong>
+</label>
+
+<input
+type="date"
+id="confirmedAppointmentDate"
+style="
+width:100%;
+padding:12px;
+margin:8px 0 18px 0;
+box-sizing:border-box;
+border-radius:8px;
+border:1px solid #555;
+font-size:16px;
+"
+>
+
+<label>
+<strong>Choose confirmed time:</strong>
+</label>
+
+<input
+type="time"
+id="confirmedAppointmentTime"
+style="
+width:100%;
+padding:12px;
+margin:8px 0 20px 0;
+box-sizing:border-box;
+border-radius:8px;
+border:1px solid #555;
+font-size:16px;
+"
+>
+
+<div style="
+display:flex;
+gap:10px;
+">
+
+<button
+id="cancelAppointment"
+style="
+flex:1;
+padding:12px;
+border-radius:8px;
+border:1px solid #555;
+background:#333;
+color:white;
+font-size:15px;
+">
+Cancel
+</button>
+
+<button
+id="confirmAppointment"
+style="
+flex:1;
+padding:12px;
+border-radius:8px;
+border:none;
+background:#d4af37;
+color:black;
+font-weight:bold;
+font-size:15px;
+">
+Confirm Approval
+</button>
+
+</div>
+`;
+
+overlay.appendChild(modal);
+
+document.body.appendChild(overlay);
+
+
+/* =========================
+BUTTON ACTIONS
+========================= */
+
+const dateInput =
+document.getElementById(
+"confirmedAppointmentDate"
+);
+
+const timeInput =
+document.getElementById(
+"confirmedAppointmentTime"
+);
+
+const cancelButton =
+document.getElementById(
+"cancelAppointment"
+);
+
+const confirmButton =
+document.getElementById(
+"confirmAppointment"
+);
+
+
+/* =========================
+CANCEL
+========================= */
+
+cancelButton.onclick =
+function(){
+
+overlay.remove();
+
+};
+
+
+/* =========================
+CONFIRM
+========================= */
+
+confirmButton.onclick =
+async function(){
+
+const appointmentDate =
+dateInput.value;
+
+const appointmentTime =
+timeInput.value;
+
+if(!appointmentDate){
+
+alert(
+"Please choose the appointment date."
+);
+
+return;
+
+}
+
+if(!appointmentTime){
+
+alert(
+"Please choose the appointment time."
+);
+
+return;
+
+}
+
+overlay.remove();
+
+
+/* =========================
+APPROVE BOOKING
+========================= */
 
 try{
 
@@ -1114,7 +1341,13 @@ error.message
 
 }
 
-}
+};
+
+  } 
+
+
+
+
 
 /* =========================
 REJECT BOOKING
