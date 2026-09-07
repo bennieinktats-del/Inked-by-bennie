@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
   /* =========================
-     CREATE BOOKING REFERENCE
+     BOOKING REFERENCE
   ========================= */
 
   function generateBookingReference() {
@@ -21,12 +21,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
     for (let i = 0; i < 6; i++) {
 
-      reference +=
-        characters.charAt(
-          Math.floor(
-            Math.random() * characters.length
-          )
-        );
+      reference += characters.charAt(
+        Math.floor(Math.random() * characters.length)
+      );
 
     }
 
@@ -64,25 +61,37 @@ document.addEventListener("DOMContentLoaded", function () {
       const selected =
         this.dataset.type;
 
+
       if (requestType) {
-        requestType.value = selected;
+
+        requestType.value =
+          selected === "flash"
+            ? "Flash Design"
+            : "Custom Tattoo";
+
       }
 
-      if (selected === "Flash Design") {
 
-        if (flashFields)
+      if (selected === "flash") {
+
+        if (flashFields) {
           flashFields.style.display = "block";
+        }
 
-        if (customFields)
+        if (customFields) {
           customFields.style.display = "none";
+        }
 
       } else {
 
-        if (flashFields)
+        if (flashFields) {
           flashFields.style.display = "none";
+        }
 
-        if (customFields)
+        if (customFields) {
           customFields.style.display = "block";
+        }
+
       }
 
     });
@@ -115,6 +124,10 @@ document.addEventListener("DOMContentLoaded", function () {
           generateBookingReference();
 
 
+        const selectedFlashDesign =
+          formData.get("design") || "";
+
+
         const booking = {
 
           "Client name":
@@ -126,9 +139,6 @@ document.addEventListener("DOMContentLoaded", function () {
           "Phone":
             formData.get("phone") || "",
 
-          "Tattoo details":
-            formData.get("tattoo_details") || "",
-
           "Booking status":
             "Pending",
 
@@ -136,7 +146,10 @@ document.addEventListener("DOMContentLoaded", function () {
             "Not paid",
 
           "tattoo_type":
-            formData.get("tattoo_type") || "",
+            formData.get("tattooType") || "",
+
+          "request_type":
+            formData.get("requestType") || "",
 
           "preferred_date":
             formData.get("preferred_date") || "",
@@ -145,13 +158,18 @@ document.addEventListener("DOMContentLoaded", function () {
             formData.get("preferred_time") || "",
 
           "Additional details":
-            formData.get("additional_details") || "",
+            formData.get("additional_details") ||
+            formData.get("notes") ||
+            "",
 
           "Size":
             formData.get("size") || "",
 
           "Placement":
             formData.get("placement") || "",
+
+          "flash_design":
+            selectedFlashDesign,
 
           "booking_reference":
             bookingReference
@@ -163,21 +181,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
           const response =
             await fetch(
-  "https://medadmstfuxqjnemjjqs.supabase.co/functions/v1/submit-gift-card",
+              "https://medadmstfuxqjnemjjqs.supabase.co/functions/v1/submit-gift-card",
               {
-
                 method: "POST",
 
                 headers: {
-
-                  "Content-Type":
-                    "application/json"
-
+                  "Content-Type": "application/json"
                 },
 
                 body:
                   JSON.stringify(booking)
-
               }
             );
 
@@ -198,29 +211,74 @@ document.addEventListener("DOMContentLoaded", function () {
             );
 
             return;
+
           }
 
 
+          /* =========================
+             SIMPLE SUCCESS
+          ========================= */
+
           alert(
-
-            "Your booking request has been submitted successfully! ❤️\n\n" +
-
-            "Your booking reference is: " +
-            bookingReference +
-
-            "\n\nPlease save this reference. " +
-
-            "Wait for your booking to be approved before purchasing your gift card."
-
+            "Booking submitted successfully! ❤️"
           );
 
 
           bookingForm.reset();
 
-        }
+
+          /* Restore Flash Design */
+
+          if (requestType) {
+            requestType.value =
+              "Flash Design";
+          }
+
+          if (flashFields) {
+            flashFields.style.display =
+              "block";
+          }
+
+          if (customFields) {
+            customFields.style.display =
+              "none";
+          }
 
 
-        catch (error) {
+          options.forEach(o =>
+            o.classList.remove("active")
+          );
+
+
+          const flashOption =
+            document.querySelector(
+              '.option[data-type="flash"]'
+            );
+
+
+          if (flashOption) {
+            flashOption.classList.add("active");
+          }
+
+
+          if (selectedFlashDesign) {
+            selectedFlashDesign.value = "";
+          }
+
+
+          document
+            .querySelectorAll(
+              "#flashDesignGallery > div"
+            )
+            .forEach(function (item) {
+
+              item.style.outline =
+                "none";
+
+            });
+
+
+        } catch (error) {
 
           console.error(
             "Booking connection error:",
@@ -281,9 +339,6 @@ document.addEventListener("DOMContentLoaded", function () {
           "gift_card_amount":
             formData.get("gift_card_amount") || "",
 
-          "gift_card_code":
-            formData.get("gift_card_code") || "",
-
           "payment_type":
             "Temporary Gift Card Payment",
 
@@ -299,19 +354,15 @@ document.addEventListener("DOMContentLoaded", function () {
             await fetch(
               "https://medadmstfuxqjnemjjqs.supabase.co/functions/v1/submit-gift-card",
               {
-
                 method: "POST",
 
                 headers: {
-
                   "Content-Type":
                     "application/json"
-
                 },
 
                 body:
                   JSON.stringify(payment)
-
               }
             );
 
@@ -332,26 +383,20 @@ document.addEventListener("DOMContentLoaded", function () {
             );
 
             return;
+
           }
 
 
           alert(
-
             "Payment submitted successfully! ❤️\n\n" +
-
-            "Your gift card payment is now pending manual verification. " +
-
-            "You will receive confirmation once your payment has been verified."
-
+            "Your gift card payment is now pending manual verification."
           );
 
 
           giftCardForm.reset();
 
-        }
 
-
-        catch (error) {
+        } catch (error) {
 
           console.error(
             "Gift card connection error:",
@@ -368,117 +413,206 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     );
 
-  }  
-                          /* =========================
-   LOAD FLASH DESIGNS
-========================= */
+  }
 
-const flashDesignGallery =
-  document.getElementById("flashDesignGallery");
 
-const selectedFlashDesign =
-  document.getElementById("selectedFlashDesign");
+  /* =========================
+     FLASH DESIGN GALLERY
+     SUPABASE
+  ========================= */
 
-if (flashDesignGallery) {
+  const flashDesignGallery =
+    document.getElementById(
+      "flashDesignGallery"
+    );
 
-  async function loadFlashDesigns() {
 
-    try {
+  const selectedFlashDesign =
+    document.getElementById(
+      "selectedFlashDesign"
+    );
 
-      const response = await fetch(
-        "https://medadmstfuxqjnemjjqs.supabase.co/rest/v1/flash_designs?select=id,name,price,image_url&order=created_at.asc",
-        {
-          headers: {
-            "apikey": "sb_publishable_sPyYiyiKojy72MhKVCMvxQ_3I8gmUIO"
-          }
+
+  if (flashDesignGallery) {
+
+    async function loadFlashDesigns() {
+
+      try {
+
+        const response =
+          await fetch(
+            "https://medadmstfuxqjnemjjqs.supabase.co/rest/v1/flash_designs?select=id,name,price,image_url&order=created_at.asc",
+            {
+              headers: {
+
+                "apikey":
+                  "sb_publishable_sPyYiyiKojy72MhKVCMvxQ_3I8gmUIO"
+
+              }
+            }
+          );
+
+
+        if (!response.ok) {
+
+          const errorText =
+            await response.text();
+
+          console.error(
+            "Supabase flash design error:",
+            errorText
+          );
+
+          throw new Error(
+            "Could not load flash designs."
+          );
+
         }
-      );
 
-      if (!response.ok) {
-        throw new Error("Could not load flash designs.");
-      }
 
-      const designs = await response.json();
+        const designs =
+          await response.json();
 
-      if (!designs.length) {
+
+        if (!designs.length) {
+
+          flashDesignGallery.innerHTML =
+            "<p>No flash designs available yet.</p>";
+
+          return;
+
+        }
+
 
         flashDesignGallery.innerHTML =
-          "<p>No flash designs available yet.</p>";
+          "";
 
-        return;
-      }
 
-      flashDesignGallery.innerHTML = "";
+        designs.forEach(
+          function (design, index) {
 
-      designs.forEach(function (design) {
+            const designNumber =
+              String(index + 1)
+                .padStart(2, "0");
 
-        const card =
-          document.createElement("div");
 
-        card.style.border = "1px solid #d4af37";
-        card.style.borderRadius = "12px";
-        card.style.padding = "10px";
-        card.style.marginBottom = "15px";
-        card.style.cursor = "pointer";
-
-        card.innerHTML = `
-          <img
-            src="${design.image_url}"
-            alt="${design.name}"
-            style="width:100%;border-radius:8px;display:block;"
-          >
-
-          <h3>${design.name}</h3>
-
-          <p>$${design.price}</p>
-
-          <button type="button">
-            Select this design
-          </button>
-        `;
-
-        const button =
-          card.querySelector("button");
-
-        button.addEventListener(
-          "click",
-          function () {
-
-            selectedFlashDesign.value =
+            const designLabel =
+              "Design " +
+              designNumber +
+              " — " +
               design.name;
 
-            document
-              .querySelectorAll("#flashDesignGallery > div")
-              .forEach(function (item) {
-                item.style.outline = "none";
-              });
 
-            card.style.outline =
-              "3px solid #d4af37";
+            const card =
+              document.createElement("div");
+
+
+            card.style.border =
+              "1px solid #d4af37";
+
+            card.style.borderRadius =
+              "12px";
+
+            card.style.padding =
+              "10px";
+
+            card.style.marginBottom =
+              "15px";
+
+            card.style.cursor =
+              "pointer";
+
+
+            card.innerHTML = `
+
+              <img
+                src="${design.image_url}"
+                alt="${designLabel}"
+                style="
+                  width:100%;
+                  border-radius:8px;
+                  display:block;
+                "
+              >
+
+              <h3>
+                ${designLabel}
+              </h3>
+
+              <p>
+                $${design.price}
+              </p>
+
+              <button type="button">
+                Select this design
+              </button>
+
+            `;
+
+
+            const button =
+              card.querySelector("button");
+
+
+            button.addEventListener(
+              "click",
+              function () {
+
+
+                if (selectedFlashDesign) {
+
+                  selectedFlashDesign.value =
+                    designLabel;
+
+                }
+
+
+                document
+                  .querySelectorAll(
+                    "#flashDesignGallery > div"
+                  )
+                  .forEach(
+                    function (item) {
+
+                      item.style.outline =
+                        "none";
+
+                    }
+                  );
+
+
+                card.style.outline =
+                  "3px solid #d4af37";
+
+              }
+            );
+
+
+            flashDesignGallery.appendChild(
+              card
+            );
 
           }
         );
 
-        flashDesignGallery.appendChild(card);
 
-      });
+      } catch (error) {
 
-    }
+        console.error(
+          "Flash designs error:",
+          error
+        );
 
-    catch (error) {
+        flashDesignGallery.innerHTML =
+          "<p>Unable to load flash designs.</p>";
 
-      console.error(
-        "Flash designs error:",
-        error
-      );
-
-      flashDesignGallery.innerHTML =
-        "<p>Unable to load flash designs.</p>";
+      }
 
     }
 
-  }
 
     loadFlashDesigns();
+
+  }
 
 });
