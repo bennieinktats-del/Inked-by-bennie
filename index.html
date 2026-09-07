@@ -37,13 +37,14 @@
   <div class="grid">
     <!-- Replace each placeholder image with your actual design -->
     <script>
-      for (let i = 1; i <= 30; i++) {
-        document.write(`
-          <article class="card">
-            <div class="design-placeholder"><span>DESIGN ${String(i).padStart(2,'0')}</span></div>
-            <div class="card-info"><strong>Design ${String(i).padStart(2,'0')}</strong><span>Flash</span></div>
-          </article>`);
-      }
+      <div id="flashFields">
+  <label>Choose your flash design
+    <select name="design">
+      <option value="">Loading designs...</option>
+    </select>
+  </label>
+</div>
+      
     </script>
   </div>
 </section>
