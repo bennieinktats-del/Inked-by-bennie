@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+a<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -54,6 +54,11 @@ button{
 }
 
 button:hover{opacity:.85}
+
+button:disabled{
+  opacity:.6;
+  cursor:not-allowed;
+}
 
 .danger{
   background:#8b0000;
@@ -176,6 +181,8 @@ Loading payments...
 </div>
 
 </div>
+
+
 <!-- FLASH DESIGNS -->
 
 <div class="card">
@@ -218,6 +225,7 @@ Loading flash designs...
 
 </div>
 
+
 <!-- BOOKINGS -->
 
 <div class="card">
@@ -251,19 +259,24 @@ const ADMIN_USER_ID =
 "a76ab4e3-1744-4d8e-8a62-510a4c4bfb00";
 
 
-/* BOOKING APPROVAL EMAIL */
+/* =========================
+BOOKING APPROVAL EMAIL
+========================= */
 
 const APPROVAL_EMAIL_FUNCTION_URL =
-"https://medadmstfuxqjnemjjqs.supabase.co/functions/v1/enking-approval";
+"https://medadmstfuxqjnemjjqs.supabase.co/functions/v1/booking-approved";
 
 
-/* PAYMENT APPROVAL EMAIL */
+/* =========================
+PAYMENT APPROVAL EMAIL
+========================= */
 
 const PAYMENT_APPROVAL_EMAIL_FUNCTION_URL =
-"https://medadmstfuxqjnemjjqs.supabase.co/functions/v1/send-approved-booking-email";
+"https://medadmstfuxqjnemjjqs.supabase.co/functions/v1/payment-approved";
 
 
 let currentBookings = [];
+window.currentPayments = [];
 
 
 const loginSection =
@@ -784,6 +797,7 @@ return;
 const reference =
 booking["Booking reference"] ||
 booking["booking_reference"] ||
+booking["booking reference"] ||
 "";
 
 const clientName =
@@ -843,7 +857,25 @@ preferred_time:
 preferredTime,
 
 deposit_amount:
-deposit
+deposit,
+
+tattoo_type:
+booking["Tattoo"] || "",
+
+tattoo_choice:
+booking["Type"] || "",
+
+design:
+booking["Design"] ||
+booking["Flash Design"] ||
+booking["Flash design"] ||
+"",
+
+placement:
+booking["Placement"] || "",
+
+size:
+booking["Size"] || ""
 
 })
 }
@@ -968,6 +1000,9 @@ throw new Error(
 const payments =
 await response.json();
 
+window.currentPayments =
+payments;
+
 
 if(!payments.length){
 
@@ -1064,10 +1099,6 @@ Reject Payment
 
 }).join("");
 
-
-window.currentPayments =
-payments;
-
 }
 catch(error){
 
@@ -1141,6 +1172,48 @@ text ||
 
 
 /* =========================
+FIND BOOKING FOR PAYMENT
+========================= */
+
+async function findBookingByReference(reference){
+
+if(!reference){
+return null;
+}
+
+const response =
+await fetch(
+`${SUPABASE_URL}/rest/v1/Bookings?Booking%20reference=eq.${encodeURIComponent(reference)}&select=*`,
+{
+headers:getHeaders()
+}
+);
+
+if(!response.ok){
+
+console.error(
+"Could not find matching booking."
+);
+
+return null;
+
+}
+
+const bookings =
+await response.json();
+
+if(!bookings.length){
+
+return null;
+
+}
+
+return bookings[0];
+
+}
+
+
+/* =========================
 APPROVE PAYMENT
 ========================= */
 
@@ -1177,11 +1250,34 @@ payment["booking_reference"] ||
 
 try{
 
+/*
+FIRST:
+Find the original booking using
+the booking reference so the final
+confirmation email contains the
+appointment details.
+*/
+
+const booking =
+await findBookingByReference(reference);
+
+
+/*
+SECOND:
+Mark the payment as approved.
+*/
+
 await updatePaymentStatus(
 payment,
 "Approved"
 );
 
+
+/*
+THIRD:
+Send the final appointment
+confirmation email.
+*/
 
 const response =
 await fetch(
@@ -1197,22 +1293,67 @@ headers:{
 body:JSON.stringify({
 
 client_name:
-payment["Name"] || "",
+payment["Name"] ||
+(booking && booking["Client"]) ||
+"",
 
 email:
-payment["Email"] || "",
+payment["Email"] ||
+(booking && booking["Email"]) ||
+"",
 
 booking_reference:
 reference,
 
 preferred_date:
-payment["Preferred date"] || "",
+(booking && booking["Preferred date"]) ||
+payment["Preferred date"] ||
+"",
 
 preferred_time:
-payment["Preferred time"] || "",
+(booking && booking["Preferred time"]) ||
+payment["Preferred time"] ||
+"",
 
 deposit_amount:
-payment["Deposit amount"] || ""
+payment["Deposit amount"] ||
+(booking && booking["Deposit amount"]) ||
+"",
+
+tattoo_type:
+(booking && (
+booking["Tattoo"] ||
+booking["Tattoo type"] ||
+""
+)) || "",
+
+tattoo_choice:
+(booking && (
+booking["Type"] ||
+booking["Flash or Custom"] ||
+booking["Flash/Custom"] ||
+booking["Design type"] ||
+""
+)) || "",
+
+design:
+(booking && (
+booking["Design"] ||
+booking["Flash Design"] ||
+booking["Flash design"] ||
+""
+)) || "",
+
+placement:
+(booking && booking["Placement"]) ||
+"",
+
+size:
+(booking && booking["Size"]) ||
+"",
+
+studio_location:
+"5680 SW 87th Ave, Miami, FL 33165"
 
 })
 }
@@ -1226,7 +1367,7 @@ await response.text()
 );
 
 alert(
-"Payment approved, but the email could not be sent."
+"Payment approved, but the confirmation email could not be sent."
 );
 
 await loadPayments();
@@ -1237,7 +1378,7 @@ return;
 
 
 alert(
-"Payment approved and email sent."
+"Payment approved and confirmation email sent."
 );
 
 await loadPayments();
@@ -1345,6 +1486,8 @@ if(savedToken){
 showDashboard();
 
 }
+
+
 /* =========================
 FLASH DESIGNS
 ========================= */
@@ -1382,7 +1525,7 @@ await fetch(
 headers:{
 "apikey":SUPABASE_KEY,
 "Content-Type":"application/json"
-  }
+}
 }
 );
 
@@ -1464,7 +1607,9 @@ flashDesignImage.files[0];
 
 if(!name){
 
-alert("Please enter a design name.");
+alert(
+"Please enter a design name."
+);
 
 return;
 
@@ -1472,7 +1617,9 @@ return;
 
 if(!price){
 
-alert("Please enter a price.");
+alert(
+"Please enter a price."
+);
 
 return;
 
@@ -1480,7 +1627,155 @@ return;
 
 if(!file){
 
-alert("Please select an image.");
+alert(
+"Please select an image."
+);
+
+return;
+
+}
+/* =========================
+FLASH DESIGNS
+========================= */
+
+const flashDesignName =
+document.getElementById("flashDesignName");
+
+const flashDesignPrice =
+document.getElementById("flashDesignPrice");
+
+const flashDesignImage =
+document.getElementById("flashDesignImage");
+
+const addFlashDesignButton =
+document.getElementById("addFlashDesignButton");
+
+const flashDesignMessage =
+document.getElementById("flashDesignMessage");
+
+const flashDesignsList =
+document.getElementById("flashDesignsList");
+
+
+async function loadFlashDesigns(){
+
+flashDesignsList.innerHTML =
+"Loading flash designs...";
+
+try{
+
+const response =
+await fetch(
+`${SUPABASE_URL}/rest/v1/flash_designs?select=*&order=created_at.desc`,
+{
+headers:{
+"apikey":SUPABASE_KEY,
+"Content-Type":"application/json"
+}
+}
+);
+
+if(!response.ok){
+
+throw new Error(
+"Could not load flash designs."
+);
+
+}
+
+const designs =
+await response.json();
+
+if(!designs.length){
+
+flashDesignsList.innerHTML =
+"<p>No flash designs added yet.</p>";
+
+return;
+
+}
+
+flashDesignsList.innerHTML =
+designs.map(function(design){
+
+return `
+
+<div class="booking">
+
+<div class="row">
+<span class="label">Name:</span>
+${design.name || ""}
+</div>
+
+<div class="row">
+<span class="label">Price:</span>
+$${design.price || ""}
+</div>
+
+${design.image_url ? `
+<img
+src="${design.image_url}"
+style="width:100%;max-width:300px;border-radius:8px;margin-top:10px;"
+>
+` : ""}
+
+</div>
+
+`;
+
+}).join("");
+
+}
+catch(error){
+
+console.error(error);
+
+flashDesignsList.innerHTML =
+`<p>${error.message}</p>`;
+
+}
+
+}
+
+
+addFlashDesignButton.addEventListener(
+"click",
+async function(){
+
+const name =
+flashDesignName.value.trim();
+
+const price =
+flashDesignPrice.value.trim();
+
+const file =
+flashDesignImage.files[0];
+
+if(!name){
+
+alert(
+"Please enter a design name."
+);
+
+return;
+
+}
+
+if(!price){
+
+alert(
+"Please enter a price."
+);
+
+return;
+
+}
+
+if(!file){
+
+alert(
+"Please select an image."
+);
 
 return;
 
@@ -1605,7 +1900,8 @@ addFlashDesignButton.disabled = false;
 
 
 loadFlashDesigns();
+
 </script>
 
 </body>
-  </html>
+</html>
