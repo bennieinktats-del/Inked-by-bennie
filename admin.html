@@ -1664,7 +1664,6 @@ return bookings[0];
 
 }
 
-
 /* =========================
 APPROVE PAYMENT
 ========================= */
@@ -1717,11 +1716,11 @@ PAYMENT_APPROVAL_EMAIL_FUNCTION_URL,
 {
 method:"POST",
 
-
 headers:{
 "Content-Type":
 "text/plain"
 },
+
 body:JSON.stringify({
 
 client_name:
@@ -1840,65 +1839,7 @@ error.message
 
 }
 
-}
-
-
-/* =========================
-REJECT PAYMENT
-========================= */
-
-async function rejectPaymentByIndex(
-index
-){
-
-const payment =
-window.currentPayments[index];
-
-if(!payment){
-
-alert(
-"Payment could not be found."
-);
-
-return;
-
-}
-
-if(!confirm(
-"Reject this payment?"
-)){
-
-return;
-
-}
-
-try{
-
-await updatePaymentStatus(
-payment,
-"Rejected"
-);
-
-alert(
-"Payment rejected."
-);
-
-await loadPayments();
-
-}
-catch(error){
-
-console.error(error);
-
-alert(
-error.message
-);
-
-}
-
-}
-
-
+  }
 /* =========================
 REFRESH BUTTONS
 ========================= */
