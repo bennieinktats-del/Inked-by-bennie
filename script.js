@@ -368,8 +368,7 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     );
 
-  }
-  /* =========================
+  }  /* =========================
      LOAD FLASH DESIGNS
   ========================= */
 
@@ -378,61 +377,55 @@ document.addEventListener("DOMContentLoaded", function () {
 
   if (flashDesignSelect) {
 
-    async function loadFlashDesigns() {
-
-      try {
-
-        const response = await fetch(
-          "https://medadmstfuxqjnemjjqs.supabase.co/rest/v1/flash_designs?select=id,name,price,image_url&order=created_at.asc",
-          {
-            headers: {
-              "apikey": "sb_publishable_sPyYiyiKojy72MhKVCMvxQ_3I8gmUIO"
-            }
-          }
-        );
-
-        if (!response.ok) {
-          const errorText = await response.text();
-          console.error("Flash designs error:", errorText);
-          return;
+    fetch(
+      "https://medadmstfuxqjnemjjqs.supabase.co/rest/v1/flash_designs?select=id,name,price,image_url&order=created_at.asc",
+      {
+        headers: {
+          "apikey": "sb_publishable_sPyYiyiKojy72MhKVCMvxQ_3I8gmUIO"
         }
+      }
+    )
+    .then(function(response) {
 
-        const designs = await response.json();
-
-        flashDesignSelect.innerHTML =
-          '<option value="">Select a design</option>';
-
-        designs.forEach(function (design) {
-
-          const option =
-            document.createElement("option");
-
-          option.value = design.name;
-
-          option.textContent =
-            design.price
-              ? `${design.name} — $${design.price}`
-              : design.name;
-
-          flashDesignSelect.appendChild(option);
-
-        });
-
+      if (!response.ok) {
+        throw new Error("Could not load flash designs.");
       }
 
-      catch (error) {
+      return response.json();
 
-        console.error(
-          "Could not load flash designs:",
-          error
-        );
+    })
+    .then(function(designs) {
 
-      }
+      flashDesignSelect.innerHTML =
+        '<option value="">Select a design</option>';
 
-    }
+      designs.forEach(function(design) {
 
-    loadFlashDesigns();
+        const option =
+          document.createElement("option");
+
+        option.value = design.name;
+
+        option.textContent =
+          design.price
+            ? design.name + " — $" + design.price
+            : design.name;
+
+        flashDesignSelect.appendChild(option);
+
+      });
+
+    })
+    .catch(function(error) {
+
+      console.error("Flash designs error:", error);
+
+      flashDesignSelect.innerHTML =
+        '<option value="">Unable to load designs</option>';
+
+    });
 
   }
+
 });
-console.log("FLASH TEST");
+
