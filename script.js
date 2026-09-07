@@ -414,205 +414,169 @@ document.addEventListener("DOMContentLoaded", function () {
     );
 
   }
+/* =========================
+   FLASH DESIGN GALLERY
+   SUPABASE
+========================= */
 
+const flashDesignGallery =
+  document.getElementById("flashDesignGallery");
 
-  /* =========================
-     FLASH DESIGN GALLERY
-     SUPABASE
-  ========================= */
+const selectedFlashDesign =
+  document.getElementById("selectedFlashDesign");
 
-  const flashDesignGallery =
-    document.getElementById(
-      "flashDesignGallery"
-    );
+if (flashDesignGallery) {
 
+  async function loadFlashDesigns() {
 
-  const selectedFlashDesign =
-    document.getElementById(
-      "selectedFlashDesign"
-    );
+    try {
 
+      const response = await fetch(
+        "https://medadmstfuxqjnemjjqs.supabase.co/rest/v1/flash_designs?select=name,image_url",
+        {
+          method: "GET",
 
-  if (flashDesignGallery) {
-
-    async function loadFlashDesigns() {
-
-      try {
-
-        const response =
-          await fetch(
-            "https://medadmstfuxqjnemjjqs.supabase.co/rest/v1/flash_designs?select=id,name,price,image_url&order=created_at.asc",
-            {
-              headers: {
-
-                "apikey":
-                  "sb_publishable_sPyYiyiKojy72MhKVCMvxQ_3I8gmUIO"
-
-              }
-            }
-          );
-
-
-        if (!response.ok) {
-
-          const errorText =
-            await response.text();
-
-          console.error(
-            "Supabase flash design error:",
-            errorText
-          );
-
-          throw new Error(
-            "Could not load flash designs."
-          );
-
+          headers: {
+            "apikey":
+              "sb_publishable_sPyYiyiKojy72MhKVCMvxQ_3I8gmUIO"
+          }
         }
+      );
 
+      if (!response.ok) {
 
-        const designs =
-          await response.json();
+        const errorText =
+          await response.text();
 
+        console.error(
+          "Supabase flash design error:",
+          errorText
+        );
 
-        if (!designs.length) {
+        throw new Error(
+          "Could not load flash designs."
+        );
+      }
 
-          flashDesignGallery.innerHTML =
-            "<p>No flash designs available yet.</p>";
+      const designs =
+        await response.json();
 
-          return;
+      console.log(
+        "Flash designs loaded:",
+        designs
+      );
 
-        }
-
+      if (!designs.length) {
 
         flashDesignGallery.innerHTML =
-          "";
+          "<p>No flash designs available yet.</p>";
 
+        return;
+      }
 
-        designs.forEach(
-          function (design, index) {
+      flashDesignGallery.innerHTML = "";
 
-            const designNumber =
-              String(index + 1)
-                .padStart(2, "0");
+      designs.forEach(function (design, index) {
 
+        const designNumber =
+          String(index + 1).padStart(2, "0");
 
-            const designLabel =
-              "Design " +
-              designNumber +
-              " — " +
-              design.name;
+        const designLabel =
+          "Design " + designNumber;
 
+        const card =
+          document.createElement("div");
 
-            const card =
-              document.createElement("div");
+        card.style.border =
+          "1px solid #d4af37";
 
+        card.style.borderRadius =
+          "12px";
 
-            card.style.border =
-              "1px solid #d4af37";
+        card.style.padding =
+          "10px";
 
-            card.style.borderRadius =
-              "12px";
+        card.style.marginBottom =
+          "15px";
 
-            card.style.padding =
-              "10px";
+        card.style.cursor =
+          "pointer";
 
-            card.style.marginBottom =
-              "15px";
+        card.innerHTML = `
 
-            card.style.cursor =
-              "pointer";
+          <img
+            src="${design.image_url}"
+            alt="${designLabel}"
+            style="
+              width:100%;
+              border-radius:8px;
+              display:block;
+            "
+          >
 
+          <h3>
+            ${designLabel}
+          </h3>
 
-            card.innerHTML = `
+          <p>
+            ${design.name}
+          </p>
 
-              <img
-                src="${design.image_url}"
-                alt="${designLabel}"
-                style="
-                  width:100%;
-                  border-radius:8px;
-                  display:block;
-                "
-              >
+          <button type="button">
+            Select this design
+          </button>
 
-              <h3>
-                ${designLabel}
-              </h3>
+        `;
 
-              <p>
-                $${design.price}
-              </p>
+        const button =
+          card.querySelector("button");
 
-              <button type="button">
-                Select this design
-              </button>
+        button.addEventListener(
+          "click",
+          function () {
 
-            `;
+            if (selectedFlashDesign) {
 
+              selectedFlashDesign.value =
+                designLabel;
 
-            const button =
-              card.querySelector("button");
+            }
 
+            document
+              .querySelectorAll(
+                "#flashDesignGallery > div"
+              )
+              .forEach(function (item) {
 
-            button.addEventListener(
-              "click",
-              function () {
+                item.style.outline =
+                  "none";
 
+              });
 
-                if (selectedFlashDesign) {
-
-                  selectedFlashDesign.value =
-                    designLabel;
-
-                }
-
-
-                document
-                  .querySelectorAll(
-                    "#flashDesignGallery > div"
-                  )
-                  .forEach(
-                    function (item) {
-
-                      item.style.outline =
-                        "none";
-
-                    }
-                  );
-
-
-                card.style.outline =
-                  "3px solid #d4af37";
-
-              }
-            );
-
-
-            flashDesignGallery.appendChild(
-              card
-            );
+            card.style.outline =
+              "3px solid #d4af37";
 
           }
         );
 
+        flashDesignGallery.appendChild(card);
 
-      } catch (error) {
+      });
 
-        console.error(
-          "Flash designs error:",
-          error
-        );
+    } catch (error) {
 
-        flashDesignGallery.innerHTML =
-          "<p>Unable to load flash designs.</p>";
+      console.error(
+        "Flash designs error:",
+        error
+      );
 
-      }
+      flashDesignGallery.innerHTML =
+        "<p>Unable to load flash designs.</p>";
 
     }
 
-
-    loadFlashDesigns();
-
   }
 
-});
+  loadFlashDesigns();
+
+          }
