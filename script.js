@@ -60,14 +60,10 @@ document.addEventListener("DOMContentLoaded", function () {
       function () {
 
         options.forEach(function (item) {
-
           item.classList.remove("active");
-
         });
 
-
         this.classList.add("active");
-
 
         const selected =
           this.dataset.type;
@@ -86,33 +82,21 @@ document.addEventListener("DOMContentLoaded", function () {
         if (selected === "flash") {
 
           if (flashFields) {
-
-            flashFields.style.display =
-              "block";
-
+            flashFields.style.display = "block";
           }
 
           if (customFields) {
-
-            customFields.style.display =
-              "none";
-
+            customFields.style.display = "none";
           }
 
         } else {
 
           if (flashFields) {
-
-            flashFields.style.display =
-              "none";
-
+            flashFields.style.display = "none";
           }
 
           if (customFields) {
-
-            customFields.style.display =
-              "block";
-
+            customFields.style.display = "block";
           }
 
         }
@@ -139,14 +123,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
         event.preventDefault();
 
-
         const formData =
           new FormData(bookingForm);
 
-
         const bookingReference =
           generateBookingReference();
-
 
         const selectedDesign =
           formData.get("design") || "";
@@ -201,12 +182,6 @@ document.addEventListener("DOMContentLoaded", function () {
         };
 
 
-        console.log(
-          "Booking being submitted:",
-          booking
-        );
-
-
         try {
 
           const response =
@@ -232,27 +207,19 @@ document.addEventListener("DOMContentLoaded", function () {
             const errorText =
               await response.text();
 
-
             console.error(
               "Booking error:",
               errorText
             );
-
 
             alert(
               "Sorry, your booking could not be submitted.\n\n" +
               "Please try again."
             );
 
-
             return;
-
           }
 
-
-          /* =========================
-             SIMPLE BOOKING SUCCESS
-          ========================= */
 
           alert(
             "Booking submitted successfully! ❤️"
@@ -262,38 +229,26 @@ document.addEventListener("DOMContentLoaded", function () {
           bookingForm.reset();
 
 
-          /* Restore Flash Design */
-
           if (requestType) {
-
             requestType.value =
               "Flash Design";
-
           }
 
 
           if (flashFields) {
-
             flashFields.style.display =
               "block";
-
           }
 
 
           if (customFields) {
-
             customFields.style.display =
               "none";
-
           }
 
 
-          /* Restore Flash Button */
-
           options.forEach(function (option) {
-
             option.classList.remove("active");
-
           });
 
 
@@ -304,13 +259,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
           if (flashOption) {
-
             flashOption.classList.add("active");
-
           }
 
-
-          /* Clear selected design */
 
           const selectedDesignInput =
             document.getElementById(
@@ -319,14 +270,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
           if (selectedDesignInput) {
-
-            selectedDesignInput.value =
-              "";
-
+            selectedDesignInput.value = "";
           }
 
-
-          /* Remove selected design outline */
 
           document
             .querySelectorAll(
@@ -347,7 +293,6 @@ document.addEventListener("DOMContentLoaded", function () {
             error
           );
 
-
           alert(
             "Sorry, we couldn't connect to the booking system. " +
             "Please try again."
@@ -363,7 +308,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   /* =========================
      GIFT CARD PAYMENT FORM
-     THIS STAYS AT THE BOTTOM
+     STAYS AT BOTTOM OF PAGE
   ========================= */
 
   const giftCardForm =
@@ -377,7 +322,6 @@ document.addEventListener("DOMContentLoaded", function () {
       async function (event) {
 
         event.preventDefault();
-
 
         const formData =
           new FormData(giftCardForm);
@@ -412,12 +356,6 @@ document.addEventListener("DOMContentLoaded", function () {
         };
 
 
-        console.log(
-          "Payment being submitted:",
-          payment
-        );
-
-
         try {
 
           const response =
@@ -443,21 +381,17 @@ document.addEventListener("DOMContentLoaded", function () {
             const errorText =
               await response.text();
 
-
             console.error(
               "Gift card payment error:",
               errorText
             );
-
 
             alert(
               "Sorry, your payment details could not be submitted.\n\n" +
               "Please try again."
             );
 
-
             return;
-
           }
 
 
@@ -477,7 +411,6 @@ document.addEventListener("DOMContentLoaded", function () {
             error
           );
 
-
           alert(
             "Sorry, we couldn't connect to the payment system. " +
             "Please check your internet connection and try again."
@@ -493,7 +426,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
   /* =========================
      FLASH DESIGN GALLERY
-     SUPABASE
   ========================= */
 
   const flashDesignGallery =
@@ -501,309 +433,377 @@ document.addEventListener("DOMContentLoaded", function () {
       "flashDesignGallery"
     );
 
-
   const selectedFlashDesignInput =
     document.getElementById(
       "selectedFlashDesign"
     );
 
 
-  if (flashDesignGallery) {
+  if (!flashDesignGallery) {
 
-    async function loadFlashDesigns() {
+    console.error(
+      "FLASH GALLERY ERROR: #flashDesignGallery was not found."
+    );
 
-      try {
+    return;
+  }
 
-        const response =
-          await fetch(
-            SUPABASE_URL +
-            "/rest/v1/flash_designs?select=name,image_url",
-            {
-              method: "GET",
 
-              headers: {
-                "apikey":
-                  SUPABASE_PUBLISHABLE_KEY,
+  /* =========================
+     LOAD FLASH DESIGNS
+  ========================= */
 
-                "Accept":
-                  "application/json"
-              }
+  async function loadFlashDesigns() {
+
+    flashDesignGallery.innerHTML =
+      "<p>Loading flash designs...</p>";
+
+
+    try {
+
+      console.log(
+        "Starting flash design request..."
+      );
+
+
+      const url =
+        SUPABASE_URL +
+        "/rest/v1/flash_designs" +
+        "?select=name,image_url,price";
+
+
+      const response =
+        await fetch(
+          url,
+          {
+            method: "GET",
+
+            headers: {
+              "apikey":
+                SUPABASE_PUBLISHABLE_KEY,
+
+              "Accept":
+                "application/json"
             }
-          );
-
-
-        if (!response.ok) {
-
-  const errorText =
-    await response.text();
-
-  console.error(
-    "SUPABASE FLASH DESIGN ERROR:",
-    response.status,
-    errorText
-  );
-
-  flashDesignGallery.innerHTML =
-    "<p style='color:red;'>Supabase error " +
-    response.status +
-    ": " +
-    errorText +
-    "</p>";
-
-  return;
-
-    }
-
-
-        const designs =
-          await response.json();
-
-
-        console.log(
-          "Flash designs loaded:",
-          designs
-        );
-
-
-        /* =========================
-           NO DESIGNS
-        ========================= */
-
-        if (!Array.isArray(designs) ||
-            designs.length === 0) {
-
-          flashDesignGallery.innerHTML =
-            "<p>No flash designs available yet.</p>";
-
-          return;
-
-        }
-
-
-        /* Clear loading message */
-
-        flashDesignGallery.innerHTML =
-          "";
-
-
-        /* =========================
-           CREATE DESIGN CARDS
-        ========================= */
-
-        designs.forEach(
-          function (design, index) {
-
-            const designNumber =
-              String(index + 1)
-                .padStart(2, "0");
-
-
-            const designLabel =
-              "Design " +
-              designNumber;
-
-
-            const card =
-              document.createElement("div");
-
-
-            card.style.border =
-              "1px solid #d4af37";
-
-
-            card.style.borderRadius =
-              "12px";
-
-
-            card.style.padding =
-              "10px";
-
-
-            card.style.marginBottom =
-              "15px";
-
-
-            card.style.cursor =
-              "pointer";
-
-
-            /* =========================
-               IMAGE
-            ========================= */
-
-            const image =
-              document.createElement("img");
-
-
-            image.src =
-              design.image_url;
-
-
-            image.alt =
-              designLabel;
-
-
-            image.style.width =
-              "100%";
-
-
-            image.style.borderRadius =
-              "8px";
-
-
-            image.style.display =
-              "block";
-
-
-            image.onerror =
-              function () {
-
-                console.error(
-                  "Could not load image:",
-                  design.image_url
-                );
-
-                image.style.display =
-                  "none";
-
-              };
-
-
-            card.appendChild(image);
-
-
-            /* =========================
-               DESIGN TITLE
-            ========================= */
-
-            const title =
-              document.createElement("h3");
-
-
-            title.textContent =
-              designLabel;
-
-
-            card.appendChild(title);
-
-
-            /* =========================
-               DATABASE NAME
-            ========================= */
-
-            if (design.name) {
-
-              const name =
-                document.createElement("p");
-
-
-              name.textContent =
-                design.name;
-
-
-              card.appendChild(name);
-
-            }
-
-
-            /* =========================
-               SELECT BUTTON
-            ========================= */
-
-            const button =
-              document.createElement(
-                "button"
-              );
-
-
-            button.type =
-              "button";
-
-
-            button.textContent =
-              "Select this design";
-
-
-            button.addEventListener(
-              "click",
-              function () {
-
-                /* Save selected design */
-
-                if (selectedFlashDesignInput) {
-
-                  selectedFlashDesignInput.value =
-                    designLabel;
-
-                }
-
-
-                /* Remove previous selection */
-
-                document
-                  .querySelectorAll(
-                    "#flashDesignGallery > div"
-                  )
-                  .forEach(
-                    function (item) {
-
-                      item.style.outline =
-                        "none";
-
-                    }
-                  );
-
-
-                /* Highlight selected card */
-
-                card.style.outline =
-                  "3px solid #d4af37";
-
-
-                console.log(
-                  "Selected flash design:",
-                  designLabel
-                );
-
-              }
-            );
-
-
-            card.appendChild(button);
-
-
-            /* Add card to gallery */
-
-            flashDesignGallery.appendChild(
-              card
-            );
-
           }
         );
 
 
-      } catch (error) {
+      console.log(
+        "Flash design HTTP status:",
+        response.status
+      );
 
-        console.error(
-          "Flash designs error:",
-          error
-        );
 
+      const responseText =
+        await response.text();
+
+
+      console.log(
+        "Flash design response:",
+        responseText
+      );
+
+
+      if (!response.ok) {
 
         flashDesignGallery.innerHTML =
           "<p>Unable to load flash designs.</p>";
 
+        console.error(
+          "SUPABASE FLASH DESIGN ERROR:",
+          response.status,
+          responseText
+        );
+
+        return;
       }
+
+
+      let designs;
+
+
+      try {
+
+        designs =
+          JSON.parse(responseText);
+
+      } catch (parseError) {
+
+        flashDesignGallery.innerHTML =
+          "<p>Unable to load flash designs.</p>";
+
+        console.error(
+          "FLASH DESIGN JSON ERROR:",
+          parseError
+        );
+
+        return;
+      }
+
+
+      if (!Array.isArray(designs)) {
+
+        flashDesignGallery.innerHTML =
+          "<p>Unable to load flash designs.</p>";
+
+        console.error(
+          "FLASH DESIGN DATA IS NOT AN ARRAY:",
+          designs
+        );
+
+        return;
+      }
+
+
+      if (designs.length === 0) {
+
+        flashDesignGallery.innerHTML =
+          "<p>No flash designs available yet.</p>";
+
+        return;
+      }
+
+
+      /* =========================
+         DISPLAY DESIGNS
+      ========================= */
+
+      flashDesignGallery.innerHTML =
+        "";
+
+
+      designs.forEach(
+        function (design, index) {
+
+          const designNumber =
+            String(index + 1)
+              .padStart(2, "0");
+
+
+          const designLabel =
+            "Design " +
+            designNumber;
+
+
+          const card =
+            document.createElement("div");
+
+
+          card.style.border =
+            "1px solid #d4af37";
+
+
+          card.style.borderRadius =
+            "12px";
+
+
+          card.style.padding =
+            "10px";
+
+
+          card.style.marginBottom =
+            "15px";
+
+
+          card.style.cursor =
+            "pointer";
+
+
+          /* =========================
+             IMAGE
+          ========================= */
+
+          const image =
+            document.createElement("img");
+
+
+          image.src =
+            design.image_url;
+
+
+          image.alt =
+            designLabel;
+
+
+          image.style.width =
+            "100%";
+
+
+          image.style.borderRadius =
+            "8px";
+
+
+          image.style.display =
+            "block";
+
+
+          image.onerror =
+            function () {
+
+              console.error(
+                "FLASH IMAGE FAILED:",
+                design.image_url
+              );
+
+              image.alt =
+                "Flash design image could not be loaded.";
+
+            };
+
+
+          card.appendChild(image);
+
+
+          /* =========================
+             TITLE
+          ========================= */
+
+          const title =
+            document.createElement("h3");
+
+
+          title.textContent =
+            designLabel;
+
+
+          card.appendChild(title);
+
+
+          /* =========================
+             DESIGN NUMBER
+          ========================= */
+
+          if (design.name) {
+
+            const name =
+              document.createElement("p");
+
+
+            name.textContent =
+              "Flash number: " +
+              design.name;
+
+
+            card.appendChild(name);
+
+          }
+
+
+          /* =========================
+             PRICE
+          ========================= */
+
+          if (
+            design.price !== null &&
+            design.price !== undefined
+          ) {
+
+            const price =
+              document.createElement("p");
+
+
+            price.textContent =
+              "$" +
+              design.price;
+
+
+            card.appendChild(price);
+
+          }
+
+
+          /* =========================
+             SELECT BUTTON
+          ========================= */
+
+          const button =
+            document.createElement(
+              "button"
+            );
+
+
+          button.type =
+            "button";
+
+
+          button.textContent =
+            "Select this design";
+
+
+          button.addEventListener(
+            "click",
+            function () {
+
+              if (selectedFlashDesignInput) {
+
+                selectedFlashDesignInput.value =
+                  designLabel;
+
+              }
+
+
+              document
+                .querySelectorAll(
+                  "#flashDesignGallery > div"
+                )
+                .forEach(
+                  function (item) {
+
+                    item.style.outline =
+                      "none";
+
+                  }
+                );
+
+
+              card.style.outline =
+                "3px solid #d4af37";
+
+
+              console.log(
+                "Selected flash design:",
+                designLabel
+              );
+
+            }
+          );
+
+
+          card.appendChild(button);
+
+
+          flashDesignGallery.appendChild(
+            card
+          );
+
+        }
+      );
+
+
+    } catch (error) {
+
+      console.error(
+        "FLASH DESIGN FETCH ERROR:",
+        error
+      );
+
+
+      flashDesignGallery.innerHTML =
+        "<p>Unable to load flash designs.</p>";
 
     }
 
-
-    /* Load designs */
-
-    loadFlashDesigns();
-
   }
+
+
+  /* =========================
+     START GALLERY
+  ========================= */
+
+  loadFlashDesigns();
 
 });
 
-               
+
+        
