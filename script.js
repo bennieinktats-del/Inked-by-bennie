@@ -1,5 +1,38 @@
  document.addEventListener("DOMContentLoaded", function () {
-  alert("SCRIPT IS WORKING");
+    /* =========================
+     PREFILL PAYMENT FORM
+  ========================= */
+
+  const paymentParams = new URLSearchParams(
+    window.location.search
+  );
+
+  const paymentForm = document.getElementById("giftCardForm");
+
+  if (paymentForm) {
+    const name = paymentParams.get("name");
+    const email = paymentParams.get("email");
+    const reference = paymentParams.get("reference");
+    const amount = paymentParams.get("amount");
+
+    if (name) {
+      paymentForm.querySelector('[name="name"]').value = name;
+    }
+
+    if (email) {
+      paymentForm.querySelector('[name="email"]').value = email;
+    }
+
+    if (reference) {
+      paymentForm.querySelector('[name="booking_reference"]').value =
+        reference;
+    }
+
+    if (amount) {
+      paymentForm.querySelector('[name="gift_card_amount"]').value =
+        amount;
+    }
+  }
 
   /* =========================
      SUPABASE
