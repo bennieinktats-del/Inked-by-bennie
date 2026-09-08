@@ -213,10 +213,10 @@
               errorText
             );
 
-            alert(
-              "Sorry, your booking could not be submitted.\n\n" +
-              "Please try again."
-            );
+           alert(
+  "BOOKING ERROR:\n\n" +
+  errorText
+);
 
             return;
           }
