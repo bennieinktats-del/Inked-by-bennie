@@ -187,7 +187,7 @@ document.addEventListener("DOMContentLoaded", function () {
           const response =
             await fetch(
               SUPABASE_URL +
-              "/functions/v1/submit-booking",
+              "/functions/v1/save-booking"
               {
                 method: "POST",
 
