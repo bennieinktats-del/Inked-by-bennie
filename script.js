@@ -188,7 +188,7 @@
           const response =
             await fetch(
               SUPABASE_URL +
-              "/functions/v1/save-booking",
+              "/functions/v1/save_booking",
               {
                 method: "POST",
 
