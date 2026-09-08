@@ -192,10 +192,11 @@
               {
                 method: "POST",
 
-                headers: {
-                  "Content-Type":
-                    "application/json"
-                },
+               headers: {
+  "Content-Type": "application/json",
+  "apikey": SUPABASE_PUBLISHABLE_KEY,
+  "Authorization": "Bearer " + SUPABASE_PUBLISHABLE_KEY
+},
 
                 body:
                   JSON.stringify(booking)
