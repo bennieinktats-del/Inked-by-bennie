@@ -188,7 +188,7 @@
           const response =
             await fetch(
               SUPABASE_URL +
-             "/functions/v1/save_booking"
+              "/functions/v1/submit_booking",
               {
                 method: "POST",
 
@@ -536,7 +536,7 @@
 
         console.error(
           "FLASH DESIGN JSON ERROR:",
-          parseError
+        parseError
         );
 
         return;
@@ -805,6 +805,3 @@
   loadFlashDesigns();
 
 });
-
-
-        
