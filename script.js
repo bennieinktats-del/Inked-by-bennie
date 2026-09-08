@@ -257,8 +257,11 @@
 
 
           alert(
-            "Booking submitted successfully! ❤️"
-          );
+  "Booking submitted successfully! ❤️\n\n" +
+  "You will receive an email within 5 minutes with further information and instructions on how to make your deposit.\n\n" +
+  "Please check your Spam or Junk folder if you do not see the email in your inbox.\n\n" +
+  "Please note: The final price of your tattoo may vary when your booking is approved. Pricing depends on the actual size, depth/detail, placement/position, and type of tattoo, including henna."
+);
 
 
           bookingForm.reset();
